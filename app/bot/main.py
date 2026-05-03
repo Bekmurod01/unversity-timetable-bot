@@ -4,6 +4,7 @@ import selectors
 import sys
 
 from aiogram import Bot, Dispatcher
+from aiogram.types import ErrorEvent
 
 from app.bot.handlers import admin, exams, notifications, room_finder, settings, start, teachers, timetable
 from app.config import get_settings
@@ -40,6 +41,9 @@ async def create_storage(redis_url: str | None):
 
 async def run_bot() -> None:
     settings_obj = get_settings()
+    if not settings_obj.bot_token.strip():
+        raise RuntimeError("BOT_TOKEN is empty. Set BOT_TOKEN in Render environment variables.")
+
     bot = Bot(token=settings_obj.bot_token)
 
     storage = await create_storage(settings_obj.redis_url)
@@ -47,6 +51,10 @@ async def run_bot() -> None:
         dp = Dispatcher(storage=storage)
     else:
         dp = Dispatcher()
+
+    @dp.error()
+    async def on_error(event: ErrorEvent) -> None:
+        logging.exception("Unhandled update error: %s", event.exception)
 
     # register routers
     dp.include_router(start.router)

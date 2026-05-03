@@ -24,9 +24,16 @@ async def _ask_year_step(message: Message, state: FSMContext, group_name: str) -
 @router.message(CommandStart())
 async def start_command(message: Message, state: FSMContext) -> None:
     await state.clear()
-    async with SessionLocal() as db:
-        service = TimetableService(db)
-        user = await service.get_user(message.from_user.id)
+    try:
+        async with SessionLocal() as db:
+            service = TimetableService(db)
+            user = await service.get_user(message.from_user.id)
+    except Exception:
+        logging.exception("Failed to load user during /start for user=%s", message.from_user.id)
+        await message.answer(
+            "⚠️ Temporary server issue. Please try again in a moment."
+        )
+        return
 
     if user:
         await message.answer(
