@@ -1,0 +1,2 @@
+﻿// module_rpc: /timetable/server/ttdbi.js
+module.implementRpc(["timetableDBIAccessor"]);

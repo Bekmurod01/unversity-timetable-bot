@@ -1,0 +1,2731 @@
+{
+  "r": {
+    "type": "maindbi",
+    "dbid": "2023",
+    "tables": [
+      {
+        "id": "teachers",
+        "def": {
+          "id": "teachers",
+          "name": "Учителя",
+          "item_name": "Учитель",
+          "icon": "/global/pics/ui/teacher_32.svg",
+          "name_cols": [
+            "FSL",
+            "LCF",
+            "LSF",
+            "PFSL",
+            "PFSLX",
+            "LCFP",
+            "LSFP",
+            "LSFCP",
+            "PLSF"
+          ]
+        },
+        "cdefs": [
+          {
+            "id": "firstname",
+            "type": "string",
+            "name": "Имя"
+          },
+          {
+            "id": "lastname",
+            "type": "string",
+            "name": "Фамилия"
+          },
+          {
+            "id": "short",
+            "type": "string",
+            "name": "Сокращение"
+          },
+          {
+            "id": "cb_hidden",
+            "type": "checkbox",
+            "name": "Не преподавательский штат сотрудников (скрыть от классного журнала)"
+          },
+          {
+            "id": "subname",
+            "type": "string",
+            "name": "Отличительное имя"
+          },
+          {
+            "id": "expired",
+            "type": "checkbox",
+            "name": "expired",
+            "invisible": true
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [
+          {
+            "id": "-347",
+            "firstname": "JAVOHIR",
+            "lastname": "ABDUG‘ANIYEV",
+            "short": "A.JAVOHIR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-348",
+            "firstname": "MUXTASAR",
+            "lastname": "ABDULLAYEVA",
+            "short": "A.MUXTASAR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-349",
+            "firstname": "ELVIRA",
+            "lastname": "ABDURASHITOVA",
+            "short": "A.ELVIRA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-350",
+            "firstname": "UMIDA",
+            "lastname": "ABDURAXIMOVA",
+            "short": "A.UMIDA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-351",
+            "firstname": "NARGIZA",
+            "lastname": "ABDURAXMANOVA",
+            "short": "A.NARGIZA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-352",
+            "firstname": "ALISHER",
+            "lastname": "ABDURAXMONOV",
+            "short": "A.ALISHER",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-353",
+            "firstname": "IRODAXON",
+            "lastname": "AHMADOVA",
+            "short": "A.IRODAXON",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-354",
+            "firstname": "TOHIR",
+            "lastname": "ALIMOV",
+            "short": "A.TOHIR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-355",
+            "firstname": "ELVINA",
+            "lastname": "ASANOVA",
+            "short": "A.ELVINA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-356",
+            "firstname": "OMAR",
+            "lastname": "ASHURBAYEV",
+            "short": "A.OMAR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-357",
+            "firstname": "IBROXIMXON",
+            "lastname": "AXMADXONOV",
+            "short": "A.IBROXIMXON",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-358",
+            "firstname": "SHAXNOZA",
+            "lastname": "BEGMATOVA",
+            "short": "B.SHAXNOZA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-359",
+            "firstname": "XOLIDA",
+            "lastname": "BEGMATOVA",
+            "short": "B.XOLIDA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-360",
+            "firstname": "MUXABBAT",
+            "lastname": "BEKMURADOVA",
+            "short": "B.MUXABBAT",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-361",
+            "firstname": "FERUZA",
+            "lastname": "BOBOJONOVA",
+            "short": "B.FERUZA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-362",
+            "firstname": "ABDURASUL",
+            "lastname": "BOBONAZAROV",
+            "short": "B.ABDURASUL",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-364",
+            "firstname": "MIRABROR",
+            "lastname": "G‘ULOMOV",
+            "short": "G.MIRABROR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-363",
+            "firstname": "GULOBAR",
+            "lastname": "G`ANIYEVA",
+            "short": "G.GULOBAR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-365",
+            "firstname": "NOZIMA",
+            "lastname": "GULYAMOVA",
+            "short": "G.NOZIMA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-366",
+            "firstname": "GULBAXOR",
+            "lastname": "IBRAXIMI",
+            "short": "I.GULBAXOR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-367",
+            "firstname": "UMIDA",
+            "lastname": "IMANOVA",
+            "short": "I.UMIDA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-368",
+            "firstname": "SAIDA",
+            "lastname": "IRGASHEVA",
+            "short": "I.SAIDA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-369",
+            "firstname": "DINORA",
+            "lastname": "ISHMANOVA",
+            "short": "I.DINORA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-370",
+            "firstname": "MURAD",
+            "lastname": "ISMAILOV",
+            "short": "I.MURAD",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-371",
+            "firstname": "AHMAD JAVID",
+            "lastname": "JAMALI",
+            "short": "J.AHMAD JAVID",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-372",
+            "firstname": "FARID",
+            "lastname": "JAMALI",
+            "short": "J.FARID",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-373",
+            "firstname": "GULXAYO",
+            "lastname": "JURAYEVA",
+            "short": "J.GULXAYO",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-374",
+            "firstname": "MERJA RIITTA",
+            "lastname": "KALLIOMAKI",
+            "short": "K.MERJA RIITTA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-375",
+            "firstname": "SHAXNOZA",
+            "lastname": "KARIMOVA",
+            "short": "K.SHAXNOZA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-376",
+            "firstname": "DIANA",
+            "lastname": "KIM",
+            "short": "K.DIANA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-377",
+            "firstname": "NILUFAR",
+            "lastname": "MAMAJONOVA",
+            "short": "M.NILUFAR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-378",
+            "firstname": "RUXSORA",
+            "lastname": "MARDIYEVA",
+            "short": "M.RUXSORA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-379",
+            "firstname": "KOMAL",
+            "lastname": "MAXMUDOV",
+            "short": "M.KOMAL",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-380",
+            "firstname": "ARTURO",
+            "lastname": "MORALES TENORIO",
+            "short": "M.ARTURO",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-381",
+            "firstname": "DILAFRUZ",
+            "lastname": "MURODOVA",
+            "short": "M.DILAFRUZ",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-382",
+            "firstname": "OZODJON",
+            "lastname": "MUSAYEV",
+            "short": "M.OZODJON",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-383",
+            "firstname": "NILUFAR",
+            "lastname": "MUXAMMEDOVA",
+            "short": "M.NILUFAR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-384",
+            "firstname": "SAMIR",
+            "lastname": "NADJAFALIYEV",
+            "short": "N.SAMIR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-385",
+            "firstname": "GULNORA",
+            "lastname": "NASIROVA",
+            "short": "N.GULNORA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-386",
+            "firstname": "LOLA",
+            "lastname": "NAZAROVA",
+            "short": "N.LOLA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-387",
+            "firstname": "GUZAL",
+            "lastname": "NORBUTAYEVA",
+            "short": "N.GUZAL",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-388",
+            "firstname": "ASLI",
+            "lastname": "ORUNBAYEV",
+            "short": "O.ASLI",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-389",
+            "firstname": "SVETLANA",
+            "lastname": "PAK",
+            "short": "P.SVETLANA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-390",
+            "firstname": "GALINA",
+            "lastname": "PAN",
+            "short": "P.GALINA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-391",
+            "firstname": "MUSLIMBEK",
+            "lastname": "PIRNAZAROV",
+            "short": "P.MUSLIMBEK",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-392",
+            "firstname": "KARIMBERGAN",
+            "lastname": "QARRIYEV",
+            "short": "Q.KARIMBERGAN",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-393",
+            "firstname": "SARDORXO‘JA",
+            "lastname": "QOSIMOV",
+            "short": "Q.SARDORXO‘JA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-394",
+            "firstname": "RUXSORA",
+            "lastname": "QURBONOVA",
+            "short": "Q.RUXSORA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-395",
+            "firstname": "MIRVALI",
+            "lastname": "RAXIMOV",
+            "short": "R.MIRVALI",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-396",
+            "firstname": "ABDULKARIM",
+            "lastname": "RUSTAMOV",
+            "short": "R.ABDULKARIM",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-397",
+            "firstname": "TEMURBEK",
+            "lastname": "SAIDNAZAROV",
+            "short": "S.TEMURBEK",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-398",
+            "firstname": "MAXSUDAXON",
+            "lastname": "SAIDOVA",
+            "short": "S.MAXSUDAXON",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-399",
+            "firstname": "NATALYA",
+            "lastname": "SARIKOVA",
+            "short": "S.NATALYA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-400",
+            "firstname": "GULRUX",
+            "lastname": "SHAKIROVA",
+            "short": "S.GULRUX",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-401",
+            "firstname": "UYG‘UN",
+            "lastname": "SHODMONOV",
+            "short": "S.UYG‘UN",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-402",
+            "firstname": "JAFAR",
+            "lastname": "SHOKIR",
+            "short": "S.JAFAR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-403",
+            "firstname": "ELMIRA",
+            "lastname": "SILANTEVA",
+            "short": "S.ELMIRA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-404",
+            "firstname": "AKMALJON",
+            "lastname": "SOTVOLDIYEV",
+            "short": "S.AKMALJON",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-405",
+            "firstname": "TATYANA",
+            "lastname": "SOXRANNAYA",
+            "short": "S.TATYANA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-406",
+            "firstname": "ABDULAZIZ",
+            "lastname": "TAXIROV",
+            "short": "T.ABDULAZIZ",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-407",
+            "firstname": "MUSHTARIY",
+            "lastname": "TULKINOVA",
+            "short": "T.MUSHTARIY",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-408",
+            "firstname": "FARRUX",
+            "lastname": "TURDIQULOV",
+            "short": "T.FARRUX",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-409",
+            "firstname": "MATLUBA",
+            "lastname": "TURDIYEVA",
+            "short": "T.MATLUBA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-410",
+            "firstname": "AZIZ",
+            "lastname": "TURG‘UNOV",
+            "short": "T.AZIZ",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-411",
+            "firstname": "NIGORA",
+            "lastname": "TURSUNBEKOVA",
+            "short": "T.NIGORA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-412",
+            "firstname": "RASUL",
+            "lastname": "TURSUNOV",
+            "short": "T.RASUL",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-413",
+            "firstname": "SHOXIDA",
+            "lastname": "TURSUNOVA",
+            "short": "T.SHOXIDA",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-414",
+            "firstname": "NILUFAR",
+            "lastname": "USMANOVA",
+            "short": "U.NILUFAR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-415",
+            "firstname": "BOBURBEK",
+            "lastname": "XAKIMOV",
+            "short": "X.BOBURBEK",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-416",
+            "firstname": "BUNYODJON",
+            "lastname": "XAKIMOV",
+            "short": "X.BUNYODJON",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-417",
+            "firstname": "ABDUKOMIL",
+            "lastname": "XASHIMOV",
+            "short": "X.ABDUKOMIL",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-418",
+            "firstname": "SABOXAT",
+            "lastname": "XASHIMOVA",
+            "short": "X.SABOXAT",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-419",
+            "firstname": "ABDUJAMOL",
+            "lastname": "XOLBEKOV",
+            "short": "X.ABDUJAMOL",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-420",
+            "firstname": "RAMZIDDIN",
+            "lastname": "XUSANOV",
+            "short": "X.RAMZIDDIN",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-421",
+            "firstname": "ABDURASHID",
+            "lastname": "YAKUBOV",
+            "short": "Y.ABDURASHID",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-422",
+            "firstname": "BAHTIYOR",
+            "lastname": "YOQUBOV",
+            "short": "Y.BAHTIYOR",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-423",
+            "firstname": "SHERZOD",
+            "lastname": "YOVQOCHEV",
+            "short": "Y.SHERZOD",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-424",
+            "firstname": "ABDUXAKIM",
+            "lastname": "YULDASHEV",
+            "short": "Y.ABDUXAKIM",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-425",
+            "firstname": "SANJARBEK",
+            "lastname": "YULDASHEV",
+            "short": "Y.SANJARBEK",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          },
+          {
+            "id": "-426",
+            "firstname": "ZAYNABXON",
+            "lastname": "YUSUPOVA",
+            "short": "Y.ZAYNABXON",
+            "cb_hidden": false,
+            "subname": "",
+            "expired": false
+          }
+        ],
+        "data_columns": [
+          "firstname",
+          "lastname",
+          "short",
+          "cb_hidden",
+          "subname",
+          "expired"
+        ]
+      },
+      {
+        "id": "subjects",
+        "def": {
+          "id": "subjects",
+          "name": "Предметы",
+          "item_name": "Предмет",
+          "icon": "/global/pics/ui/subject_32.svg"
+        },
+        "cdefs": [
+          {
+            "id": "name",
+            "type": "string",
+            "name": "Название"
+          },
+          {
+            "id": "short",
+            "type": "string",
+            "name": "Сокращение"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [
+          {
+            "id": "-201",
+            "name": "(09:00-10:00) Business and Business Environment",
+            "short": "B&BE"
+          },
+          {
+            "id": "-205",
+            "name": "(09:00-10:00) International Business",
+            "short": "IB"
+          },
+          {
+            "id": "-206",
+            "name": "(09:00-10:00) Marketing Insights and Analytics",
+            "short": "MI&A"
+          },
+          {
+            "id": "-196",
+            "name": "(09:00-10:00) Research and Plan Marketing Campaign",
+            "short": "R&PMC"
+          },
+          {
+            "id": "-197",
+            "name": "(10:10-11:10) Business Finance",
+            "short": "BF"
+          },
+          {
+            "id": "-202",
+            "name": "(10:10-11:10) Human Resourse Management",
+            "short": "HRM"
+          },
+          {
+            "id": "-195",
+            "name": "(10:30-11:30) Managing and Running a Small Business",
+            "short": "M&RSB"
+          },
+          {
+            "id": "-207",
+            "name": "(10:30-11:30) Organizational Behaviour",
+            "short": "OB"
+          },
+          {
+            "id": "-203",
+            "name": "(11:20-12:20) Business and Business Environment",
+            "short": "B&BE"
+          },
+          {
+            "id": "-198",
+            "name": "(11:20-12:20) Exploring Business",
+            "short": "EB"
+          },
+          {
+            "id": "-208",
+            "name": "(11:40-12:40) Research Project",
+            "short": "RP"
+          },
+          {
+            "id": "-204",
+            "name": "(12:30-13:30) Human Resourse Management",
+            "short": "HRM"
+          },
+          {
+            "id": "-199",
+            "name": "(12:30-13:30) Marketing Processes and Planning",
+            "short": "MP&P"
+          },
+          {
+            "id": "-200",
+            "name": "(14:00:15:00) Marketing Processes and Planning",
+            "short": "MP&P"
+          },
+          {
+            "id": "-1263",
+            "name": "ACCOUNTING PRINCIPLES",
+            "short": "AP"
+          },
+          {
+            "id": "-1338",
+            "name": "ADVANCED FINANCIAL REPORTING",
+            "short": "AFR"
+          },
+          {
+            "id": "-1335",
+            "name": "ADVANCED MANAGEMENT ACCOUNTING",
+            "short": "AMA"
+          },
+          {
+            "id": "-1409",
+            "name": "ALGORITHMS & DATA STRUCTURE",
+            "short": "ALGST"
+          },
+          {
+            "id": "-1388",
+            "name": "ALGORITHMS & DATA STRUCTURES",
+            "short": "ALGSTR"
+          },
+          {
+            "id": "-1286",
+            "name": "AMALIY MATEMATIKA I",
+            "short": "AMATH1"
+          },
+          {
+            "id": "-1291",
+            "name": "AMALIY MATEMATIKA II",
+            "short": "AMATH2"
+          },
+          {
+            "id": "-1366",
+            "name": "APPLIED LINGUISTICS SKILLS",
+            "short": "APPLINGU"
+          },
+          {
+            "id": "-1319",
+            "name": "APPLIED MATHEMATICS 1",
+            "short": "AM1"
+          },
+          {
+            "id": "-1323",
+            "name": "APPLIED MATHEMATICS 2",
+            "short": "AM2"
+          },
+          {
+            "id": "-1247",
+            "name": "APPLIED MATHEMATICS1",
+            "short": "AM1"
+          },
+          {
+            "id": "-1285",
+            "name": "APPLYING LEAN PRINCIPLES TO BUSINESS OPERATIONS",
+            "short": "ALPBO"
+          },
+          {
+            "id": "-1397",
+            "name": "AR/VR DEVELOPMENT",
+            "short": "AR/DEVELOP"
+          },
+          {
+            "id": "-1401",
+            "name": "ARTIFICIAL INTELLIGENCE",
+            "short": "ARTIN"
+          },
+          {
+            "id": "-1347",
+            "name": "AUDIT AND ASSURANCE",
+            "short": "AUDASS"
+          },
+          {
+            "id": "-1344",
+            "name": "AUDITING IN CONTEXT",
+            "short": "AUDC"
+          },
+          {
+            "id": "-1310",
+            "name": "BANKLAR VA MOLIYAVIY BOZORLAR",
+            "short": "BMB"
+          },
+          {
+            "id": "-1399",
+            "name": "BIG DATA",
+            "short": "BDM"
+          },
+          {
+            "id": "-1298",
+            "name": "BIZNES STRATEGIYASI",
+            "short": "BS"
+          },
+          {
+            "id": "-1288",
+            "name": "BIZNESGA KIRISH",
+            "short": "BK"
+          },
+          {
+            "id": "-1308",
+            "name": "BIZNESNI REJALASHTIRISH",
+            "short": "BR"
+          },
+          {
+            "id": "-1314",
+            "name": "BIZNIESNI BAXOLASH",
+            "short": "BB"
+          },
+          {
+            "id": "-1301",
+            "name": "BOZOR INFRATUZILMASI",
+            "short": "BI"
+          },
+          {
+            "id": "-1324",
+            "name": "BUSINESS AND TECHNOLOGY",
+            "short": "BTECH"
+          },
+          {
+            "id": "-1257",
+            "name": "BUSINESS AND THE BUSINESS ENVIRONMENT",
+            "short": "BBE"
+          },
+          {
+            "id": "-1316",
+            "name": "BUSINESS COMMUNICATION SKILLS",
+            "short": "BCOMS"
+          },
+          {
+            "id": "-1250",
+            "name": "BUSINESS DECISION MAKING",
+            "short": "BDM"
+          },
+          {
+            "id": "-1246",
+            "name": "BUSINESS FINANCE",
+            "short": "BF"
+          },
+          {
+            "id": "-1303",
+            "name": "BUXGALTERIYA HISOBI VA HISOBOTI",
+            "short": "BHH"
+          },
+          {
+            "id": "-1283",
+            "name": "CHANGE MANAGEMENT",
+            "short": "CHMAN"
+          },
+          {
+            "id": "-1353",
+            "name": "COMPUTER LITERACY",
+            "short": "COMLITE"
+          },
+          {
+            "id": "-1386",
+            "name": "COMPUTER NETWORKS",
+            "short": "COMNETW"
+          },
+          {
+            "id": "-1384",
+            "name": "COMPUTER SCIENCE I",
+            "short": "COMSCIE"
+          },
+          {
+            "id": "-1387",
+            "name": "COMPUTER SCIENCE II",
+            "short": "COMSCIE"
+          },
+          {
+            "id": "-1395",
+            "name": "COMPUTER SYSTEM SECURITY",
+            "short": "COMS"
+          },
+          {
+            "id": "-1273",
+            "name": "CONSUMER AND INTELLECTUAL PROPERTY LAW",
+            "short": "CIPLAW"
+          },
+          {
+            "id": "-1284",
+            "name": "CONTEMPORARY ISSUES IN BUSINESS",
+            "short": "CIB"
+          },
+          {
+            "id": "-1334",
+            "name": "CORPORATE AND BUSINESS LAW",
+            "short": "CORBL"
+          },
+          {
+            "id": "-1261",
+            "name": "CORPORATE ETHICS",
+            "short": "CE"
+          },
+          {
+            "id": "-1345",
+            "name": "CORPORATE TAXATION",
+            "short": "CORTAX"
+          },
+          {
+            "id": "-1405",
+            "name": "CYBER SECURITY",
+            "short": "CYBSECURIT"
+          },
+          {
+            "id": "-1381",
+            "name": "DATABASE CONCEPTS",
+            "short": "DATCONC"
+          },
+          {
+            "id": "-1362",
+            "name": "DEVELOPING INTERCULTURAL COMPETENCE",
+            "short": "DEVCOM"
+          },
+          {
+            "id": "-1398",
+            "name": "DEVELOPING PROJECT AND DIGITAL START-UP",
+            "short": "DEVPR"
+          },
+          {
+            "id": "-1375",
+            "name": "DEVELOPING TEACHING SKILLS & PROFESSIONALISM",
+            "short": "DEVPROFESSI"
+          },
+          {
+            "id": "-1282",
+            "name": "DIGITAL BUSINESS",
+            "short": "DB"
+          },
+          {
+            "id": "-1252",
+            "name": "DIGITAL MARKETING",
+            "short": "DM"
+          },
+          {
+            "id": "-1254",
+            "name": "DINSHUNOSLIK",
+            "short": "DIN"
+          },
+          {
+            "id": "-1361",
+            "name": "DISCOURSE ANALYSIS",
+            "short": "DISANA"
+          },
+          {
+            "id": "-1248",
+            "name": "ENGLISH FOR ACADEMIC PURPOSES",
+            "short": "EAP"
+          },
+          {
+            "id": "-1322",
+            "name": "ENGLISH FOR SPECIFIC PURPOSES",
+            "short": "ESP"
+          },
+          {
+            "id": "-1280",
+            "name": "ENTREPRENEURSHIP IN BUSINESS",
+            "short": "EB"
+          },
+          {
+            "id": "-1243",
+            "name": "EXPLORING BUSINESS",
+            "short": "EB"
+          },
+          {
+            "id": "-1325",
+            "name": "FINANCIAL ACCOUNTING I",
+            "short": "FA"
+          },
+          {
+            "id": "-1330",
+            "name": "FINANCIAL ACCOUNTING II",
+            "short": "FA1"
+          },
+          {
+            "id": "-1343",
+            "name": "FINANCIAL MANAGEMENT",
+            "short": "FINMAN"
+          },
+          {
+            "id": "-1277",
+            "name": "FINANCIAL PRINCIPLES AND TECHNIQUES FOR NON-SPECIALISTS",
+            "short": "FPTNSP"
+          },
+          {
+            "id": "-1333",
+            "name": "FINANCIAL REPORTING",
+            "short": "FINR"
+          },
+          {
+            "id": "-1383",
+            "name": "FUNDAMENTALS OF IT",
+            "short": "FUN"
+          },
+          {
+            "id": "-1390",
+            "name": "GAME DEVELOPMENT",
+            "short": "GAMDEVELOPM"
+          },
+          {
+            "id": "-1349",
+            "name": "GRAMMAR & VOCABULARY IN CONTEXT",
+            "short": "GRA"
+          },
+          {
+            "id": "-1403",
+            "name": "HISTORY OF UZBEKISTAN",
+            "short": "HISUZ"
+          },
+          {
+            "id": "-1336",
+            "name": "HR MANAGEMENT",
+            "short": "HRM"
+          },
+          {
+            "id": "-1259",
+            "name": "HUMAN RESOURCE MANAGEMENT",
+            "short": "HRM"
+          },
+          {
+            "id": "-1274",
+            "name": "HUMAN RESOURCES - VALUE AND CONTRIBUTION",
+            "short": "HR-VC"
+          },
+          {
+            "id": "-1318",
+            "name": "ICT FOR ACCOUNTING",
+            "short": "ICTACC"
+          },
+          {
+            "id": "-1264",
+            "name": "INNOVATION AND COMMERCIALISATION",
+            "short": "ICOM"
+          },
+          {
+            "id": "-1279",
+            "name": "INNOVATION AND CREATIVITY IN BUSINESS",
+            "short": "ICB"
+          },
+          {
+            "id": "-1357",
+            "name": "INTEGRATED ENGLISH SKILLS",
+            "short": "INTEN"
+          },
+          {
+            "id": "-1329",
+            "name": "INTELLECTUAL PROPERTY LAW",
+            "short": "IPLAW"
+          },
+          {
+            "id": "-1245",
+            "name": "INTERNATIONAL BUSINESS",
+            "short": "IB"
+          },
+          {
+            "id": "-137",
+            "name": "Introduction to Economics",
+            "short": "IE"
+          },
+          {
+            "id": "-1327",
+            "name": "INTRODUCTION TO ECONOMICS",
+            "short": "IE"
+          },
+          {
+            "id": "-1363",
+            "name": "INTRODUCTION TO ELT: PRINCIPLES AND METHODS",
+            "short": "INT"
+          },
+          {
+            "id": "-1379",
+            "name": "INTRODUCTION TO IT",
+            "short": "INT"
+          },
+          {
+            "id": "-1360",
+            "name": "INTRODUCTION TO LANGUAGE LEARNING",
+            "short": "INTL"
+          },
+          {
+            "id": "-1359",
+            "name": "INTRODUCTION TO LINGUISTICS",
+            "short": "INTLING"
+          },
+          {
+            "id": "-1378",
+            "name": "INTRODUCTION TO PROGRAMMING - 1",
+            "short": "INTPROGRAMM"
+          },
+          {
+            "id": "-1380",
+            "name": "INTRODUCTION TO PROGRAMMING - 2",
+            "short": "INTPROGRAMM"
+          },
+          {
+            "id": "-1346",
+            "name": "INVESTMENT AND RISK MANAGEMENT",
+            "short": "INVMAN"
+          },
+          {
+            "id": "-1287",
+            "name": "IQTISODIYOT NAZARIYASI",
+            "short": "IN"
+          },
+          {
+            "id": "-1292",
+            "name": "IQTISODIYOTDA AXBOROT TEXNOLOGIYALARI VA TIZIMLARI",
+            "short": "AKT"
+          },
+          {
+            "id": "-1297",
+            "name": "KOMPANIYANI TASHKIL ETISH VA BOSHQARISH",
+            "short": "KTB"
+          },
+          {
+            "id": "-1293",
+            "name": "KREATIV FIKRLASH",
+            "short": "KF"
+          },
+          {
+            "id": "-1371",
+            "name": "LANGUAGE COURSE DESIGN",
+            "short": "LANCOUR"
+          },
+          {
+            "id": "-1411",
+            "name": "LANGUAGE TESTING & ASSESSMENT",
+            "short": "LT&A"
+          },
+          {
+            "id": "-1262",
+            "name": "LEADERSHIP AND MANAGEMENT",
+            "short": "LEADM"
+          },
+          {
+            "id": "-1367",
+            "name": "LESSON PLANNING & CLASSROOM MANAGEMENT",
+            "short": "LESMAN"
+          },
+          {
+            "id": "-1309",
+            "name": "LIDERLIK",
+            "short": "LEAD"
+          },
+          {
+            "id": "-1351",
+            "name": "LISTENING AND SPEAKING SKILLS",
+            "short": "LISAND"
+          },
+          {
+            "id": "-1311",
+            "name": "LOYIHA BOSHQARUVI",
+            "short": "LB"
+          },
+          {
+            "id": "-1396",
+            "name": "MACHINE INTELLIGENCE",
+            "short": "MACINTEL"
+          },
+          {
+            "id": "-1408",
+            "name": "MACHINE LEARNING",
+            "short": "MACLEARN"
+          },
+          {
+            "id": "-1406",
+            "name": "MACHINE LEARNING",
+            "short": "MACLEARN"
+          },
+          {
+            "id": "-1276",
+            "name": "MACROECONOMICS",
+            "short": "MACE"
+          },
+          {
+            "id": "-1320",
+            "name": "MAINTAINING FINANCIAL RECORDS",
+            "short": "MFR"
+          },
+          {
+            "id": "-1300",
+            "name": "MAKROIQTISODIYOT",
+            "short": "MAKI"
+          },
+          {
+            "id": "-1326",
+            "name": "MANAGEMENT ACCOUNTING I",
+            "short": "MANA1"
+          },
+          {
+            "id": "-1331",
+            "name": "MANAGEMENT ACCOUNTING II",
+            "short": "MANA2"
+          },
+          {
+            "id": "-1260",
+            "name": "MANAGING A SUCCESSFUL BUSINESS PROJECT",
+            "short": "MSBP"
+          },
+          {
+            "id": "-1249",
+            "name": "MANAGING AN EVENT",
+            "short": "ME"
+          },
+          {
+            "id": "-1269",
+            "name": "MANAGING AND RUNNING A SMALL BUSINESS",
+            "short": "MRSB"
+          },
+          {
+            "id": "-1321",
+            "name": "MANAGING COSTS AND FINANCE",
+            "short": "MCF"
+          },
+          {
+            "id": "-1317",
+            "name": "MANAGING INFORMATION",
+            "short": "MI"
+          },
+          {
+            "id": "-1328",
+            "name": "MARKETING",
+            "short": "MAR"
+          },
+          {
+            "id": "-1304",
+            "name": "MARKETING",
+            "short": "MAR"
+          },
+          {
+            "id": "-1270",
+            "name": "MARKETING INSIGHTS AND ANALYTICS",
+            "short": "MIA"
+          },
+          {
+            "id": "-1258",
+            "name": "MARKETING PROCESSES AND PLANNING",
+            "short": "MPP"
+          },
+          {
+            "id": "-1370",
+            "name": "MATERIALS EVALUATION & DESIGN",
+            "short": "MATEVA"
+          },
+          {
+            "id": "-1306",
+            "name": "MENEJMENT",
+            "short": "M"
+          },
+          {
+            "id": "-1271",
+            "name": "MICROECONOMICS",
+            "short": "MICE"
+          },
+          {
+            "id": "-1296",
+            "name": "MIKROIQTISODIYOT",
+            "short": "MIKI"
+          },
+          {
+            "id": "-1391",
+            "name": "MOBILE APPLICATION DEVELOPMENT",
+            "short": "MOBDEVE"
+          },
+          {
+            "id": "-1299",
+            "name": "MOLIYAVIY MENEJMENT",
+            "short": "MM"
+          },
+          {
+            "id": "-1256",
+            "name": "MOST RECENT HISTORY OF UZBEKISTAN",
+            "short": "MRHUZ"
+          },
+          {
+            "id": "-1289",
+            "name": "O'ZBEKISTONNING ENG YANGI TARIXI",
+            "short": "O'ZEYT"
+          },
+          {
+            "id": "-1385",
+            "name": "OBJECT-ORIENTED PROGRAMMING",
+            "short": "OBJPROG"
+          },
+          {
+            "id": "-1392",
+            "name": "OPERATING SYSTEMS",
+            "short": "OPESYS"
+          },
+          {
+            "id": "-1265",
+            "name": "OPERATIONS MANAGEMENT",
+            "short": "OPM"
+          },
+          {
+            "id": "-1268",
+            "name": "ORGANIZATIONAL BEHAVIOUR",
+            "short": "ORGB"
+          },
+          {
+            "id": "-1339",
+            "name": "PERFORMANCE MANAGEMENT",
+            "short": "PM"
+          },
+          {
+            "id": "-1404",
+            "name": "PHILOSOPHY",
+            "short": "PHIPHI"
+          },
+          {
+            "id": "-1255",
+            "name": "PHILOSOPHY",
+            "short": "PHI"
+          },
+          {
+            "id": "-1251",
+            "name": "PRINCIPLES OF MANAGEMENT",
+            "short": "PM"
+          },
+          {
+            "id": "-1400",
+            "name": "PROGRAMMING INTERNET OF THINGS",
+            "short": "PROI"
+          },
+          {
+            "id": "-1341",
+            "name": "PROJECT MANAGEMENT",
+            "short": "PM"
+          },
+          {
+            "id": "-1352",
+            "name": "PUBLIC SPEAKING & PRESENTATION SKILLS",
+            "short": "PUBSPEAKI"
+          },
+          {
+            "id": "-1305",
+            "name": "RAQAMLI BIZNES",
+            "short": "RB"
+          },
+          {
+            "id": "-1358",
+            "name": "READING & WRITING II",
+            "short": "REA& WRI"
+          },
+          {
+            "id": "-1350",
+            "name": "READING AND WRITING 1",
+            "short": "REAW"
+          },
+          {
+            "id": "-1348",
+            "name": "RESEARCH AND ANALYSIS PROJECT",
+            "short": "RES"
+          },
+          {
+            "id": "-1244",
+            "name": "RESEARCH AND PLAN A MARKETING CAMPAIGN",
+            "short": "RPMC"
+          },
+          {
+            "id": "-1372",
+            "name": "RESEARCH METHODS",
+            "short": "RESMETH"
+          },
+          {
+            "id": "-1267",
+            "name": "RESEARCH PROJECT I",
+            "short": "RESP1"
+          },
+          {
+            "id": "-1272",
+            "name": "RESEARCH PROJECT II",
+            "short": "RESP2"
+          },
+          {
+            "id": "-1275",
+            "name": "SALES MANAGEMENT",
+            "short": "SMAN"
+          },
+          {
+            "id": "-1253",
+            "name": "SALES TECHNIQUES AND PROCESSES",
+            "short": "STP"
+          },
+          {
+            "id": "-1355",
+            "name": "SECOND FOREIGN LANGUAGE – CHINESE",
+            "short": "SEC"
+          },
+          {
+            "id": "-1356",
+            "name": "SECOND FOREIGN LANGUAGE – GERMAN",
+            "short": "SECFOREIG"
+          },
+          {
+            "id": "-1369",
+            "name": "SECOND FOREIGN LANGUAGE – GERMAN/ TURKISH",
+            "short": "SEC"
+          },
+          {
+            "id": "-1354",
+            "name": "SECOND FOREIGN LANGUAGE – TURKISH",
+            "short": "SEC"
+          },
+          {
+            "id": "-1407",
+            "name": "SOFTWARE PROJECT 1",
+            "short": "SOFPROJ"
+          },
+          {
+            "id": "-1410",
+            "name": "SOFTWARE PROJECT 2",
+            "short": "SOFPROJ"
+          },
+          {
+            "id": "-1340",
+            "name": "SOLIQ TIZIMIDA DASTURIY MAHSULOT",
+            "short": "STIT"
+          },
+          {
+            "id": "-1313",
+            "name": "SOLIQ VA SOLIQQA TORTISH",
+            "short": "SST"
+          },
+          {
+            "id": "-1337",
+            "name": "SOLIQ VA SOLIQQA TORTISH 1 (TAXATION 1)",
+            "short": "SST1"
+          },
+          {
+            "id": "-1342",
+            "name": "SOLIQ VA SOLIQQA TORTISH 2 (TAXATION 2)",
+            "short": "SST2"
+          },
+          {
+            "id": "-1382",
+            "name": "STATISTICS",
+            "short": "STASTA"
+          },
+          {
+            "id": "-1332",
+            "name": "STATISTICS",
+            "short": "STATS"
+          },
+          {
+            "id": "-1295",
+            "name": "STATISTIKA",
+            "short": "STAT"
+          },
+          {
+            "id": "-1278",
+            "name": "STRATEGIC MANAGEMENT",
+            "short": "SMAN"
+          },
+          {
+            "id": "-1281",
+            "name": "SUPPLY CHAIN MANAGEMENT",
+            "short": "SCHMAN"
+          },
+          {
+            "id": "-1393",
+            "name": "SYSTEM ADMINISTRATION",
+            "short": "SYSADMINI"
+          },
+          {
+            "id": "-1302",
+            "name": "TA'MINOT ZANJIRINI BOSHQARISH",
+            "short": "TZB"
+          },
+          {
+            "id": "-1294",
+            "name": "TADBIRKORLIK VA INNOVATSIYALAR",
+            "short": "TI"
+          },
+          {
+            "id": "-1312",
+            "name": "TADQIQOT USULLARI VA KO‘NIKMALARI",
+            "short": "TUK"
+          },
+          {
+            "id": "-1266",
+            "name": "TAXATION",
+            "short": "TAX"
+          },
+          {
+            "id": "-1365",
+            "name": "TEACHING & INTEGRATING LANGUAGE SKILLS",
+            "short": "TEA& IN"
+          },
+          {
+            "id": "-1373",
+            "name": "TEACHING ENGLISH TO YOUNG LEARNERS",
+            "short": "TEAL"
+          },
+          {
+            "id": "-1364",
+            "name": "TEACHING LANGUAGE SYSTEM FOR COMMUNICATION",
+            "short": "TEACOMMUN"
+          },
+          {
+            "id": "-1376",
+            "name": "TEACHING PRACTICE",
+            "short": "TEAPRAC"
+          },
+          {
+            "id": "-1374",
+            "name": "TECHNOLOGY FOR LEARNING & TEACHING",
+            "short": "TECT"
+          },
+          {
+            "id": "-1315",
+            "name": "TIJORAT VA SERVISE LOGISTIKASI",
+            "short": "TSL"
+          },
+          {
+            "id": "-1368",
+            "name": "TRANSLATION PRINCIPLES AND STRATEGIES",
+            "short": "TRASTR"
+          },
+          {
+            "id": "-1402",
+            "name": "UNIX SYSTEMS ADMINISTRATION AND PROGRAMMING (LINUX)",
+            "short": "UNISYSTEMS"
+          },
+          {
+            "id": "-1389",
+            "name": "WEB APPLICATION DEVELOPMENT I",
+            "short": "WEBAPPLICATI"
+          },
+          {
+            "id": "-1394",
+            "name": "WEB APPLICATION DEVELOPMENT II",
+            "short": "WEBAPPLICATI"
+          },
+          {
+            "id": "-1377",
+            "name": "WORLD LITERATURE OR GENERSL PSYCHOLOGY",
+            "short": "WORPSY"
+          },
+          {
+            "id": "-1307",
+            "name": "XARIDLARNI BOSHQARISH VA GLOBAL MANBALAR",
+            "short": "XBGM"
+          },
+          {
+            "id": "-1290",
+            "name": "XORIJIY TIL (INGLIZ)",
+            "short": "XT(I)"
+          },
+          {
+            "id": "1",
+            "name": "Поведение",
+            "short": "Beh"
+          }
+        ],
+        "data_columns": [
+          "name",
+          "short"
+        ]
+      },
+      {
+        "id": "classrooms",
+        "def": {
+          "id": "classrooms",
+          "name": "Кабинеты",
+          "item_name": "Кабинет",
+          "icon": "/global/pics/ui/classroom_32.svg"
+        },
+        "cdefs": [
+          {
+            "id": "short",
+            "type": "string",
+            "name": "Сокращение"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [
+          {
+            "id": "-13",
+            "short": "IL1"
+          },
+          {
+            "id": "-14",
+            "short": "IL2"
+          },
+          {
+            "id": "-17",
+            "short": "LR2"
+          },
+          {
+            "id": "-18",
+            "short": "LR3"
+          },
+          {
+            "id": "-21",
+            "short": "SR1"
+          },
+          {
+            "id": "-22",
+            "short": "SR2"
+          },
+          {
+            "id": "-23",
+            "short": "SR3"
+          },
+          {
+            "id": "-24",
+            "short": "SR4"
+          },
+          {
+            "id": "-74",
+            "short": "AH 1 A"
+          },
+          {
+            "id": "-76",
+            "short": "AH 2 A"
+          },
+          {
+            "id": "-75",
+            "short": "AH 201 B"
+          },
+          {
+            "id": "-78",
+            "short": "AH 3 A"
+          },
+          {
+            "id": "-77",
+            "short": "AH 301 B"
+          },
+          {
+            "id": "-79",
+            "short": "AH 401 B"
+          },
+          {
+            "id": "-80",
+            "short": "EZONE 1 C"
+          },
+          {
+            "id": "-81",
+            "short": "LAB - 305 C"
+          },
+          {
+            "id": "-82",
+            "short": "LAB - 308 C"
+          },
+          {
+            "id": "-84",
+            "short": "LAB - 405 C"
+          },
+          {
+            "id": "-83",
+            "short": "LAB 404 B"
+          },
+          {
+            "id": "-85",
+            "short": "LR 207 C"
+          },
+          {
+            "id": "-86",
+            "short": "LR 307 C"
+          },
+          {
+            "id": "-88",
+            "short": "LR 4 A"
+          },
+          {
+            "id": "-87",
+            "short": "LR 407 C"
+          },
+          {
+            "id": "-89",
+            "short": "LR 5 A"
+          },
+          {
+            "id": "-90",
+            "short": "SR 1 A"
+          },
+          {
+            "id": "-97",
+            "short": "SR 2 A"
+          },
+          {
+            "id": "-91",
+            "short": "SR 202 B"
+          },
+          {
+            "id": "-92",
+            "short": "SR 203 B"
+          },
+          {
+            "id": "-93",
+            "short": "SR 204 B"
+          },
+          {
+            "id": "-94",
+            "short": "SR 205 C"
+          },
+          {
+            "id": "-95",
+            "short": "SR 206 C"
+          },
+          {
+            "id": "-96",
+            "short": "SR 208 C"
+          },
+          {
+            "id": "-101",
+            "short": "SR 3 A"
+          },
+          {
+            "id": "-98",
+            "short": "SR 302 B"
+          },
+          {
+            "id": "-99",
+            "short": "SR 303 B"
+          },
+          {
+            "id": "-100",
+            "short": "SR 304 B"
+          },
+          {
+            "id": "-106",
+            "short": "SR 4 A"
+          },
+          {
+            "id": "-102",
+            "short": "SR 402 B"
+          },
+          {
+            "id": "-103",
+            "short": "SR 403 B"
+          },
+          {
+            "id": "-104",
+            "short": "SR 406 C"
+          },
+          {
+            "id": "-105",
+            "short": "SR 408 C"
+          },
+          {
+            "id": "-107",
+            "short": "SR 5 A"
+          },
+          {
+            "id": "-108",
+            "short": "SR 6 A"
+          },
+          {
+            "id": "-109",
+            "short": "SR 7 A"
+          }
+        ],
+        "data_columns": [
+          "short"
+        ]
+      },
+      {
+        "id": "classes",
+        "def": {
+          "id": "classes",
+          "name": "Классы",
+          "item_name": "Класс",
+          "icon": "/global/pics/ui/class_32.svg"
+        },
+        "cdefs": [
+          {
+            "id": "name",
+            "type": "string",
+            "name": "Название"
+          },
+          {
+            "id": "short",
+            "type": "string",
+            "name": "Сокращение"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [
+          {
+            "id": "-322",
+            "name": "AAF-1-01",
+            "short": "AAF-1-01"
+          },
+          {
+            "id": "-323",
+            "name": "AAF-1-02",
+            "short": "AAF-1-02"
+          },
+          {
+            "id": "-324",
+            "name": "AAF-2-01",
+            "short": "AAF-2-01"
+          },
+          {
+            "id": "-325",
+            "name": "AAF-2-02",
+            "short": "AAF-2-02"
+          },
+          {
+            "id": "-326",
+            "name": "AAF-2-03",
+            "short": "AAF-2-03"
+          },
+          {
+            "id": "-327",
+            "name": "AAF-3-01",
+            "short": "AAF-3-01"
+          },
+          {
+            "id": "-367",
+            "name": "BA-1-01",
+            "short": "BA-1-01"
+          },
+          {
+            "id": "-356",
+            "name": "BA-1-02",
+            "short": "BA-1-02"
+          },
+          {
+            "id": "-357",
+            "name": "BA-1-03",
+            "short": "BA-1-03"
+          },
+          {
+            "id": "-358",
+            "name": "BA-2-01",
+            "short": "BA-2-01"
+          },
+          {
+            "id": "-359",
+            "name": "BA-2-02",
+            "short": "BA-2-02"
+          },
+          {
+            "id": "-360",
+            "name": "BA-2-03",
+            "short": "BA-2-03"
+          },
+          {
+            "id": "-361",
+            "name": "BA-2-04",
+            "short": "BA-2-04"
+          },
+          {
+            "id": "-362",
+            "name": "BA-2-05",
+            "short": "BA-2-05"
+          },
+          {
+            "id": "-371",
+            "name": "BA-2-06",
+            "short": "BA-2-06"
+          },
+          {
+            "id": "-363",
+            "name": "BA-3-01",
+            "short": "BA-3-01"
+          },
+          {
+            "id": "-364",
+            "name": "BA-3-02",
+            "short": "BA-3-02"
+          },
+          {
+            "id": "-309",
+            "name": "BM-1-01",
+            "short": "BM-1-01"
+          },
+          {
+            "id": "-310",
+            "name": "BM-1-02",
+            "short": "BM-1-02"
+          },
+          {
+            "id": "-311",
+            "name": "BM-1-03",
+            "short": "BM-1-03"
+          },
+          {
+            "id": "-312",
+            "name": "BM-2-01",
+            "short": "BM-2-01"
+          },
+          {
+            "id": "-313",
+            "name": "BM-2-02",
+            "short": "BM-2-02"
+          },
+          {
+            "id": "-314",
+            "name": "BM-2-03",
+            "short": "BM-2-03"
+          },
+          {
+            "id": "-315",
+            "name": "BM-2-04",
+            "short": "BM-2-04"
+          },
+          {
+            "id": "-316",
+            "name": "BM-2-05",
+            "short": "BM-2-05"
+          },
+          {
+            "id": "-317",
+            "name": "BM-2-06",
+            "short": "BM-2-06"
+          },
+          {
+            "id": "-318",
+            "name": "BM-3-01",
+            "short": "BM-3-01"
+          },
+          {
+            "id": "-319",
+            "name": "BM-3-02",
+            "short": "BM-3-02"
+          },
+          {
+            "id": "-320",
+            "name": "BM-3-03",
+            "short": "BM-3-03"
+          },
+          {
+            "id": "-369",
+            "name": "CS/SE-2-01",
+            "short": "CS/SE-2-01"
+          },
+          {
+            "id": "-368",
+            "name": "CS/SE-2-02",
+            "short": "CS/SE-2-02"
+          },
+          {
+            "id": "-332",
+            "name": "CS/SE-2-03",
+            "short": "CS/SE-2-03"
+          },
+          {
+            "id": "-333",
+            "name": "CS/SE-2-04",
+            "short": "CS/SE-2-04"
+          },
+          {
+            "id": "-370",
+            "name": "CS/SE-2-05",
+            "short": "CS/SE-2-05"
+          },
+          {
+            "id": "-336",
+            "name": "ELT-01",
+            "short": "ELT-01"
+          },
+          {
+            "id": "-337",
+            "name": "ELT-02",
+            "short": "ELT-02"
+          },
+          {
+            "id": "-338",
+            "name": "ELT-03",
+            "short": "ELT-03"
+          },
+          {
+            "id": "-339",
+            "name": "ELT-04",
+            "short": "ELT-04"
+          },
+          {
+            "id": "-340",
+            "name": "ELT-05",
+            "short": "ELT-05"
+          },
+          {
+            "id": "-341",
+            "name": "ELT-06",
+            "short": "ELT-06"
+          },
+          {
+            "id": "-342",
+            "name": "ELT-07",
+            "short": "ELT-07"
+          },
+          {
+            "id": "-343",
+            "name": "ELT-08",
+            "short": "ELT-08"
+          },
+          {
+            "id": "-344",
+            "name": "ELT-09",
+            "short": "ELT-09"
+          },
+          {
+            "id": "-345",
+            "name": "ELT-10",
+            "short": "ELT-10"
+          },
+          {
+            "id": "-346",
+            "name": "ELT-2-01",
+            "short": "ELT-2-01"
+          },
+          {
+            "id": "-347",
+            "name": "ELT-2-02",
+            "short": "ELT-2-02"
+          },
+          {
+            "id": "-348",
+            "name": "ELT-2-03",
+            "short": "ELT-2-03"
+          },
+          {
+            "id": "-349",
+            "name": "ELT-2-04",
+            "short": "ELT-2-04"
+          },
+          {
+            "id": "-350",
+            "name": "ELT-2-05",
+            "short": "ELT-2-05"
+          },
+          {
+            "id": "-351",
+            "name": "ELT-2-06",
+            "short": "ELT-2-06"
+          },
+          {
+            "id": "-352",
+            "name": "ELT-2-07",
+            "short": "ELT-2-07"
+          },
+          {
+            "id": "-353",
+            "name": "ELT-2-08",
+            "short": "ELT-2-08"
+          },
+          {
+            "id": "-354",
+            "name": "ELT-2-09",
+            "short": "ELT-2-09"
+          },
+          {
+            "id": "-328",
+            "name": "IT-01",
+            "short": "IT-01"
+          },
+          {
+            "id": "-329",
+            "name": "IT-02",
+            "short": "IT-02"
+          },
+          {
+            "id": "-365",
+            "name": "L6-BTEC-1001",
+            "short": "L6-BTEC-1001"
+          },
+          {
+            "id": "-334",
+            "name": "SE-3-01",
+            "short": "SE-3-01"
+          },
+          {
+            "id": "-366",
+            "name": "SE-3-02",
+            "short": "SE-3-02"
+          }
+        ],
+        "data_columns": [
+          "name",
+          "short"
+        ]
+      },
+      {
+        "id": "students",
+        "def": {
+          "id": "students",
+          "name": "Учащиеся",
+          "item_name": "Учащийся",
+          "icon": "/global/pics/ui/student_32.svg",
+          "name_cols": [
+            "FSL",
+            "LCF",
+            "LSF",
+            "PFSL",
+            "PFSLX",
+            "LCFP",
+            "LSFP",
+            "LSFCP",
+            "PLSF"
+          ]
+        },
+        "cdefs": [],
+        "_uial": 0
+      },
+      {
+        "id": "igroups",
+        "def": {
+          "id": "igroups",
+          "name": "Группы по интересам",
+          "item_name": "Группа по интересам",
+          "icon": "/global/pics/ui/igroup_32.svg"
+        },
+        "cdefs": [
+          {
+            "id": "name",
+            "type": "string",
+            "name": "Название"
+          },
+          {
+            "id": "short",
+            "type": "string",
+            "name": "Сокращение"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [],
+        "data_columns": [
+          "name",
+          "short"
+        ]
+      },
+      {
+        "id": "periods",
+        "def": {
+          "id": "periods",
+          "name": "Периоды",
+          "item_name": "Период",
+          "icon": "/global/pics/ui/time_32.svg",
+          "multikey": [
+            "period"
+          ]
+        },
+        "cdefs": [
+          {
+            "id": "name",
+            "type": "string",
+            "name": "Название"
+          },
+          {
+            "id": "short",
+            "type": "string",
+            "name": "Сокращение"
+          },
+          {
+            "id": "period",
+            "type": "tableid",
+            "name": "Период",
+            "table": "periods"
+          },
+          {
+            "id": "starttime",
+            "type": "time",
+            "name": "Начинается"
+          },
+          {
+            "id": "endtime",
+            "type": "time",
+            "name": "Заканчивается"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [
+          {
+            "id": "1",
+            "name": "1.",
+            "short": "1",
+            "period": "1",
+            "starttime": "09:00",
+            "endtime": "10:20"
+          },
+          {
+            "id": "2",
+            "name": "2.",
+            "short": "2",
+            "period": "2",
+            "starttime": "10:30",
+            "endtime": "11:50"
+          },
+          {
+            "id": "3",
+            "name": "3.",
+            "short": "3",
+            "period": "3",
+            "starttime": "12:00",
+            "endtime": "13:20"
+          },
+          {
+            "id": "4",
+            "name": "4.",
+            "short": "4",
+            "period": "4",
+            "starttime": "14:00",
+            "endtime": "15:20"
+          },
+          {
+            "id": "5",
+            "name": "5.",
+            "short": "5",
+            "period": "5",
+            "starttime": "15:30",
+            "endtime": "16:50"
+          },
+          {
+            "id": "6",
+            "name": "6.",
+            "short": "6",
+            "period": "6",
+            "starttime": "17:00",
+            "endtime": "18:20"
+          }
+        ],
+        "data_columns": [
+          "name",
+          "short",
+          "period",
+          "starttime",
+          "endtime"
+        ]
+      },
+      {
+        "id": "dayparts",
+        "def": {
+          "id": "dayparts",
+          "name": "Части дня",
+          "item_name": "Часть дня",
+          "icon": "/global/pics/ui/time_32.png",
+          "multikey": [
+            "daypart"
+          ]
+        },
+        "cdefs": [
+          {
+            "id": "starttime",
+            "type": "time",
+            "name": "Начинается"
+          },
+          {
+            "id": "endtime",
+            "type": "time",
+            "name": "Заканчивается"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [
+          {
+            "id": "h1",
+            "starttime": "08:00",
+            "endtime": "12:00"
+          },
+          {
+            "id": "h2",
+            "starttime": "12:00",
+            "endtime": "16:00"
+          },
+          {
+            "id": "h3",
+            "starttime": "16:00",
+            "endtime": "20:00"
+          }
+        ],
+        "data_columns": [
+          "starttime",
+          "endtime"
+        ]
+      },
+      {
+        "id": "dates",
+        "def": {
+          "id": "dates",
+          "name": "Даты",
+          "item_name": "Дата",
+          "icon": "/global/pics/ui/calendar_32.png",
+          "multikey": [
+            "date"
+          ],
+          "vt_filter": [
+            "date"
+          ]
+        },
+        "cdefs": [
+          {
+            "id": "tt_num",
+            "type": "tableid",
+            "name": "tt_num",
+            "table": "officialetimetables"
+          },
+          {
+            "id": "tt_day",
+            "type": "int",
+            "name": "tt_day"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [],
+        "data_columns": [
+          "tt_num",
+          "tt_day"
+        ]
+      },
+      {
+        "id": "events",
+        "def": {
+          "id": "events",
+          "name": "События",
+          "item_name": "Событие",
+          "icon": "/global/pics/ui/events_32.svg",
+          "multikey": [
+            "date",
+            "subId"
+          ],
+          "vt_filter": [
+            "date"
+          ]
+        },
+        "cdefs": [
+          {
+            "id": "typ",
+            "type": "tableid",
+            "name": "Тип события",
+            "table": "event_types"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [],
+        "data_columns": [
+          "typ"
+        ]
+      },
+      {
+        "id": "event_types",
+        "def": {
+          "id": "event_types",
+          "name": "Типы событий",
+          "item_name": "Тип события",
+          "icon": "/global/pics/ui/events_32.svg"
+        },
+        "cdefs": [
+          {
+            "id": "name",
+            "type": "string",
+            "name": "Название"
+          },
+          {
+            "id": "icon",
+            "type": "string",
+            "name": "icon"
+          }
+        ],
+        "_uial": 0,
+        "data_rows": [
+          {
+            "id": "ttcancel",
+            "name": "Отменено обучение",
+            "icon": "/calendar/pics/event_types/ttcancel_32.svg"
+          },
+          {
+            "id": "holiday",
+            "name": "Праздник",
+            "icon": "/calendar/pics/event_types/holiday_32.svg"
+          },
+          {
+            "id": "sholiday",
+            "name": "Школьные каникулы",
+            "icon": "/calendar/pics/event_types/sholiday_32.svg"
+          },
+          {
+            "id": "freeday",
+            "name": "Свободный день",
+            "icon": "/calendar/pics/event_types/freeday_32.svg"
+          },
+          {
+            "id": "distant",
+            "name": "Дистанционное обучение",
+            "icon": "/calendar/pics/event_types/distant_32.svg"
+          },
+          {
+            "id": "lesson",
+            "name": "Урок",
+            "icon": "/global/pics/ui/subject_32.svg"
+          },
+          {
+            "id": "plesson",
+            "name": "Проект урока",
+            "icon": "/global/pics/ui/subject_32.svg"
+          },
+          {
+            "id": "rlesson",
+            "name": "Дополнительный урок",
+            "icon": "/global/pics/ui/subject_32.svg"
+          },
+          {
+            "id": "ctlesson",
+            "name": "Уроки с классными руководителями",
+            "icon": "/global/pics/ui/subject_32.svg"
+          },
+          {
+            "id": "schoolevent",
+            "name": "Событие в школе",
+            "icon": "/global/pics/ui/events_32.svg"
+          },
+          {
+            "id": "trip",
+            "name": "Экскурсия",
+            "icon": "/calendar/pics/event_types/trip_32.svg"
+          },
+          {
+            "id": "culture",
+            "name": "Культурное событие",
+            "icon": "/calendar/pics/event_types/culture_32.svg"
+          },
+          {
+            "id": "excursion",
+            "name": "Экскурсия",
+            "icon": "/calendar/pics/event_types/excursion_32.svg"
+          },
+          {
+            "id": "ctevent",
+            "name": "Событие с учителем класса",
+            "icon": "/global/pics/ui/events_32.svg"
+          },
+          {
+            "id": "representation",
+            "name": "Представитель",
+            "icon": "/global/pics/ui/events_32.svg"
+          },
+          {
+            "id": "testing",
+            "name": "Тестирование производительности",
+            "icon": "/exam/pics/hw/testing_c1.png"
+          },
+          {
+            "id": "bexam",
+            "name": "Большой экзамен",
+            "icon": "/exam/pics/hw/bexam_c1.png"
+          },
+          {
+            "id": "exam",
+            "name": "Экзамен",
+            "icon": "/exam/pics/hw/exam_c1.png"
+          },
+          {
+            "id": "sexam",
+            "name": "Тест",
+            "icon": "/exam/pics/hw/sexam_c1.png"
+          },
+          {
+            "id": "oexam",
+            "name": "Устный экзамен",
+            "icon": "/exam/pics/hw/oexam_c1.png"
+          },
+          {
+            "id": "rexam",
+            "name": "Доклад",
+            "icon": "/exam/pics/hw/rexam_c1.png"
+          },
+          {
+            "id": "pexam",
+            "name": "Проект",
+            "icon": "/exam/pics/hw/pexam_c1.png"
+          },
+          {
+            "id": "meeting",
+            "name": "Совещание учителей",
+            "icon": "/calendar/pics/event_types/meeting_32.svg"
+          },
+          {
+            "id": "bmeeting",
+            "name": "Конференция учителей",
+            "icon": "/calendar/pics/event_types/bmeeting_32.svg"
+          },
+          {
+            "id": "bookroom",
+            "name": "Зарезервированный кабинет",
+            "icon": "/calendar/pics/event_types/bookroom_32.svg"
+          },
+          {
+            "id": "changeroom",
+            "name": "Изменить кабинет",
+            "icon": "/calendar/pics/event_types/changeroom_32.svg"
+          },
+          {
+            "id": "other",
+            "name": "Другое событие",
+            "icon": "/global/pics/ui/events_32.svg"
+          },
+          {
+            "id": "other_safety",
+            "name": "Правила безопасности",
+            "icon": "/calendar/pics/event_types/other_safety_32.svg"
+          },
+          {
+            "id": "parentsevening",
+            "name": "Родительский вечер",
+            "icon": "/calendar/pics/event_types/parentsevening_32.svg"
+          },
+          {
+            "id": "other_cb",
+            "name": "Классный журнал",
+            "icon": "/global/pics/ui/events_32.svg"
+          }
+        ],
+        "data_columns": [
+          "name",
+          "icon"
+        ]
+      },
+      {
+        "id": "subst_absents",
+        "def": {
+          "id": "subst_absents",
+          "name": "Отсутствует",
+          "item_name": "Отсутствует",
+          "icon": "/global/pics/ui/absent_32.svg",
+          "multikey": [
+            "date",
+            "subId"
+          ],
+          "vt_filter": [
+            "date"
+          ]
+        },
+        "cdefs": [],
+        "_uial": 0
+      }
+    ],
+    "changeEvents": {
+      "dbi:teachers": 8383409,
+      "dbi:subjects": 4414739,
+      "dbi:classrooms": 1633764,
+      "dbi:classes": 5222439,
+      "dbi:igroups": 5796544,
+      "dbi:groupsubjects": 9608624,
+      "dbi:old_igroups": 1678281,
+      "dbi:periods": 4208437,
+      "dbi:dayparts": 8476601,
+      "dbi:dates": 7763735,
+      "dbi:event_types": 5364466,
+      "dbi:halves": 6008894,
+      "dbi:officialtimetables": 7136390,
+      "timetables": 6844514,
+      "dbi:timetables": 9933434,
+      "dbi:students": 3972282
+    }
+  }
+}

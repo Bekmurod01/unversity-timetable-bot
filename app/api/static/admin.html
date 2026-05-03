@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>University Bot Admin</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --ink: #1f2430;
+      --muted: #5a6170;
+      --accent: #0a7a6d;
+      --line: #e4e7ef;
+    }
+    body { font-family: "Segoe UI", Tahoma, sans-serif; margin: 0; background: radial-gradient(circle at top right, #dff4f0, var(--bg)); color: var(--ink); }
+    .wrap { max-width: 960px; margin: 20px auto; padding: 0 16px; }
+    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.04); }
+    h1 { margin: 0 0 14px; }
+    h3 { margin: 0 0 8px; font-size: 16px; }
+    input, textarea, button, select { width: 100%; box-sizing: border-box; padding: 9px; border-radius: 8px; border: 1px solid #d8dce7; }
+    button { background: var(--accent); border: none; color: white; cursor: pointer; font-weight: 600; }
+    pre { background: #f5f8ff; border-radius: 8px; padding: 10px; overflow: auto; max-height: 220px; font-size: 12px; }
+    .small { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Admin Panel</h1>
+    <p class="small">Use the same admin key configured in .env (SECRET_KEY).</p>
+    <div class="grid">
+      <section class="card">
+        <h3>Admin Key</h3>
+        <input id="key" type="password" placeholder="SECRET_KEY" />
+      </section>
+      <section class="card">
+        <h3>Dashboard</h3>
+        <button onclick="loadDashboard()">Load Stats</button>
+        <pre id="dashboard"></pre>
+      </section>
+      <section class="card">
+        <h3>Broadcast</h3>
+        <textarea id="msg" rows="4" placeholder="Message"></textarea>
+        <input id="group" placeholder="Optional group (IT-202)" />
+        <input id="year" type="number" placeholder="Optional year" />
+        <button onclick="sendBroadcast()">Send</button>
+      </section>
+      <section class="card">
+        <h3>Manual Lesson</h3>
+        <textarea id="lesson" rows="8">{"group_name":"IT-202","subject":"Algorithms","teacher":"Dr. A. Karimov","room":"305","day":"monday","start_time":"13:00","end_time":"14:30","status":"active"}</textarea>
+        <button onclick="createLesson()">Add Lesson</button>
+      </section>
+      <section class="card">
+        <h3>Logs</h3>
+        <button onclick="loadLogs()">Refresh Logs</button>
+        <pre id="logs"></pre>
+      </section>
+    </div>
+  </div>
+
+<script>
+const getKey = () => document.getElementById('key').value;
+const headers = () => ({ 'Content-Type': 'application/json', 'X-Admin-Key': getKey() });
+
+async function loadDashboard() {
+  const r = await fetch('/admin/dashboard', { headers: { 'X-Admin-Key': getKey() } });
+  const j = await r.json();
+  document.getElementById('dashboard').textContent = JSON.stringify(j, null, 2);
+}
+
+async function sendBroadcast() {
+  const body = {
+    message: document.getElementById('msg').value,
+    group_name: document.getElementById('group').value || null,
+    year: document.getElementById('year').value ? Number(document.getElementById('year').value) : null
+  };
+  const r = await fetch('/admin/broadcast', { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  alert(await r.text());
+}
+
+async function createLesson() {
+  const body = JSON.parse(document.getElementById('lesson').value);
+  const r = await fetch('/admin/timetable/manual', { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  alert(await r.text());
+}
+
+async function loadLogs() {
+  const r = await fetch('/admin/logs', { headers: { 'X-Admin-Key': getKey() } });
+  const j = await r.json();
+  document.getElementById('logs').textContent = JSON.stringify(j, null, 2);
+}
+</script>
+</body>
+</html>

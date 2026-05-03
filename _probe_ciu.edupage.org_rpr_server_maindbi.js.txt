@@ -1,0 +1,2 @@
+﻿// module_rpc: /rpr/server/maindbi.js
+module.implementRpc(["mainDBIAccessor","mainDBISetOrder","maindbiIsProblemWithRemove","php_dbi_columnTextValues","maindbiColumnAutocomplete","getNameColNames"]);

@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: university_bot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  init-db:
+    build: .
+    command: python -m app.init_db
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/university_bot
+    depends_on:
+      - postgres
+
+  api:
+    build: .
+    command: uvicorn app.api.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/university_bot
+    depends_on:
+      postgres:
+        condition: service_started
+      init-db:
+        condition: service_completed_successfully
+
+  bot:
+    build: .
+    command: python -m app.bot.main
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/university_bot
+    depends_on:
+      postgres:
+        condition: service_started
+      init-db:
+        condition: service_completed_successfully
+
+  scheduler:
+    build: .
+    command: python -m app.scheduler.worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@postgres:5432/university_bot
+    depends_on:
+      postgres:
+        condition: service_started
+      init-db:
+        condition: service_completed_successfully
+
+volumes:
+  pg_data:
