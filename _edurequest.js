@@ -50,7 +50,7 @@ var EduRequest = (function () {
         if (date === void 0) { date = this.timezone_date(); }
         if (!date || !this.schoolyear_turnover)
             ASC.dieError('8130146806');
-        var year = parseInt(date.substr(0, 4));
+        var year = parseInt(date.substr(0, 4), 10);
         if (date < this.schoolYear_turnOver(year))
             year--;
         return year;
@@ -76,15 +76,15 @@ var EduRequest = (function () {
         return (0, lib_date_1.date_delta)(this.schoolYear_turnOver(year + 1), -1);
     };
     EduRequest.prototype.isAdmin = function () {
-        return this.loggedUser == 'Admin';
+        return this.loggedUser === 'Admin';
     };
     EduRequest.prototype.isUcitel = function () {
-        if (this.loggedUser.substr(0, 6) == 'Ucitel')
+        if (this.loggedUser.substr(0, 6) === 'Ucitel')
             return this.loggedUser.substr(6);
         return '';
     };
     EduRequest.prototype.isStudent = function () {
-        if (this.loggedUser.substr(0, 7) == 'Student')
+        if (this.loggedUser.substr(0, 7) === 'Student')
             return this.loggedUser.substr(7);
         return '';
     };
@@ -92,12 +92,12 @@ var EduRequest = (function () {
         return this.isStudent() || this.props.parent_studentid || '';
     };
     EduRequest.prototype.isParent = function () {
-        if (this.loggedUser.substr(0, 5) == 'Rodic')
+        if (this.loggedUser.substr(0, 5) === 'Rodic')
             return this.loggedUser.substr(5);
         return '';
     };
     EduRequest.prototype.isGuest = function () {
-        if (this.loggedUser.substr(0, 5) == 'Guest')
+        if (this.loggedUser.substr(0, 5) === 'Guest')
             return this.loggedUser.substr(5);
         return '';
     };
@@ -207,7 +207,7 @@ var EduRequest = (function () {
             var m = /\{(?:|([a-z]{2}):)([0-9]{4,5})\}/g.exec(s);
             if (!m)
                 break;
-            s = s.replace(m[0], this.uls(parseInt(m[2]), m[1]));
+            s = s.replace(m[0], this.uls(parseInt(m[2], 10), m[1]));
         }
         return s;
     };
@@ -217,7 +217,7 @@ var EduRequest = (function () {
         var t = this.aiLangs[s];
         if (!t) {
             t = s.split('|')[0];
-            if (t[2] == ':')
+            if (t[2] === ':')
                 t = t.slice(3);
         }
         if (!t)
@@ -238,7 +238,7 @@ var EduRequest = (function () {
     };
     EduRequest.prototype.timezone_datetime = function (time) {
         if (time === void 0) { time = undefined; }
-        var d = typeof time == 'number' ? new Date(time * 1000) : new Date();
+        var d = typeof time === 'number' ? new Date(time * 1000) : new Date();
         var parts;
         try {
             var df = new Intl.DateTimeFormat('en-US', {
@@ -253,7 +253,9 @@ var EduRequest = (function () {
             });
             var s = df.format(d);
             parts = /(\d+)\D+(\d+)\D+(\d+)\D+(\d+)\D+(\d+)\D+(\d+)/.exec(s);
-            parts[4] %= 24;
+            if (!parts)
+                throw new Error('timezone_datetime parts parse failed');
+            parts[4] = Number(parts[4]) % 24;
         }
         catch (e) {
             parts = [
@@ -339,7 +341,7 @@ var EduRequest = (function () {
                         return [2, func()];
                     case 1:
                         e_1 = _a.sent();
-                        if (typeof (e_1 === null || e_1 === void 0 ? void 0 : e_1.then) != 'function')
+                        if (typeof (e_1 === null || e_1 === void 0 ? void 0 : e_1.then) !== 'function')
                             throw e_1;
                         return [4, e_1];
                     case 2:
@@ -388,7 +390,7 @@ var EduRequest_Client = (function (_super) {
         var req_props = ASC.req_props;
         _super.prototype.initRequest.call(_this, req_props || {});
         if (!req_props) {
-            if (window && !((_a = window.MobileAppBridge) === null || _a === void 0 ? void 0 : _a.isActive())) {
+            if (typeof window !== 'undefined' && !((_a = window.MobileAppBridge) === null || _a === void 0 ? void 0 : _a.isActive())) {
                 ASC.sendErrorJS('9883465806', new Error().stack);
             }
         }
@@ -396,6 +398,7 @@ var EduRequest_Client = (function (_super) {
     }
     EduRequest_Client.prototype.maindbi = function (year, options) {
         var _a;
+        if (options === void 0) { options = {}; }
         return tslib_1.__awaiter(this, void 0, Promise, function () {
             return tslib_1.__generator(this, function (_b) {
                 switch (_b.label) {
