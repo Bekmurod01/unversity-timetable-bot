@@ -4,12 +4,12 @@ services:
     plan: free
     maxmemoryPolicy: noeviction
 
-  - type: worker
+  - type: web
     name: university-timetable-bot
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python -u -m app.bot.main
+    startCommand: python -u start_web.py
     autoDeploy: true
     envVars:
       - key: REDIS_URL
