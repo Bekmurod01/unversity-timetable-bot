@@ -137,25 +137,39 @@ class TimetableService:
 
         teacher_subjects: dict[str, set[str]] = {}
         teacher_faculty_counts: dict[str, dict[str, int]] = {}
+        skipped_source_rows = 0
         for teacher_name, subject, group_name in rows:
-            if not teacher_name:
+            clean_name = str(teacher_name or "").strip()
+            if not clean_name:
+                skipped_source_rows += 1
+                logger.warning(
+                    "Skipping teacher source row with empty teacher name: teacher=%r subject=%r group=%r",
+                    teacher_name,
+                    subject,
+                    group_name,
+                )
                 continue
 
-            if teacher_name not in teacher_subjects:
-                teacher_subjects[teacher_name] = set()
+            if clean_name not in teacher_subjects:
+                teacher_subjects[clean_name] = set()
             if subject:
-                teacher_subjects[teacher_name].add(subject)
+                teacher_subjects[clean_name].add(str(subject).strip())
 
             token = str(group_name or "").strip().upper().split("-", 1)[0]
             if token:
-                if teacher_name not in teacher_faculty_counts:
-                    teacher_faculty_counts[teacher_name] = {}
-                teacher_faculty_counts[teacher_name][token] = teacher_faculty_counts[teacher_name].get(token, 0) + 1
+                if clean_name not in teacher_faculty_counts:
+                    teacher_faculty_counts[clean_name] = {}
+                teacher_faculty_counts[clean_name][token] = teacher_faculty_counts[clean_name].get(token, 0) + 1
 
+        failed_teacher_records = 0
         for name, subjects in teacher_subjects.items():
             subject_str = ", ".join(sorted(subjects))
             if len(subject_str) > 120:
-                logger.warning("Teacher subject string exceeded legacy limit: teacher=%s length=%s", name, len(subject_str))
+                logger.warning(
+                    "Teacher subject string exceeds legacy VARCHAR(120): teacher=%s length=%s",
+                    name,
+                    len(subject_str),
+                )
             faculty_votes = teacher_faculty_counts.get(name, {})
             inferred_faculty = max(faculty_votes, key=faculty_votes.get) if faculty_votes else None
 
@@ -173,8 +187,16 @@ class TimetableService:
                         self.db.add(teacher)
                     await self.db.flush()
             except Exception:
+                failed_teacher_records += 1
                 logger.exception("Failed syncing teacher record and continued: teacher=%s", name)
         await self.db.commit()
+        logger.info(
+            "sync_teachers completed: source_rows=%s teachers_processed=%s source_rows_skipped=%s teacher_records_failed=%s",
+            len(rows),
+            len(teacher_subjects),
+            skipped_source_rows,
+            failed_teacher_records,
+        )
 
     async def get_teacher_by_name(self, name: str) -> Teacher | None:
         stmt = select(Teacher).where(Teacher.name == name)
