@@ -58,6 +58,9 @@ async def run_bot() -> None:
     dp.include_router(teachers.router)
     dp.include_router(admin.router)
 
+    # Ensure polling works even if webhook had been set previously.
+    await bot.delete_webhook(drop_pending_updates=False)
+    logging.info("Webhook cleared. Starting bot polling.")
     await dp.start_polling(bot, drop_pending_updates=True)
 
 
