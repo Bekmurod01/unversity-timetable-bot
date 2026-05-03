@@ -10,6 +10,7 @@ from app.db import SessionLocal
 from app.services.timetable_service import TimetableService
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 
 @router.message(F.text.regexp(r"(Notifications|Enable Notifications)$"))
@@ -24,7 +25,7 @@ async def notifications_menu(message: Message) -> None:
         selected = user.lesson_reminder_minutes if user.lesson_reminder_enabled else None
         status = "Enabled" if user.lesson_reminder_enabled else "Disabled"
         await message.answer(
-            "? Reminder Settings\n\n"
+            "🔔 Reminder Settings\n\n"
             "Choose when to receive lesson reminders:\n"
             f"Current: {status}" + (f" ({user.lesson_reminder_minutes} min before)" if user.lesson_reminder_enabled else ""),
             reply_markup=reminder_settings_inline_keyboard(selected_minutes=selected),
@@ -33,7 +34,7 @@ async def notifications_menu(message: Message) -> None:
 
 @router.callback_query(F.data.startswith("reminder:"))
 async def reminder_callbacks(callback: CallbackQuery, state: FSMContext) -> None:
-    logging.info("notifications.callback user=%s data=%s", callback.from_user.id, callback.data)
+    logger.info("notifications.callback user=%s data=%s", callback.from_user.id, callback.data)
     if not callback.message:
         await callback.answer()
         return
@@ -48,10 +49,14 @@ async def reminder_callbacks(callback: CallbackQuery, state: FSMContext) -> None
         data = callback.data or ""
 
         if data.startswith("reminder:set:"):
-            minutes = int(data.split(":")[-1])
+            try:
+                minutes = int(data.split(":")[-1])
+            except ValueError:
+                await callback.answer("Invalid reminder value.")
+                return
             await service.set_lesson_reminder_settings(user, enabled=True, minutes=minutes)
             await callback.message.edit_text(
-                "? Reminder Settings\n\n"
+                "🔔 Reminder Settings\n\n"
                 f"Saved: reminders are ON, {minutes} minutes before lesson.",
                 reply_markup=reminder_settings_inline_keyboard(selected_minutes=minutes),
             )
@@ -68,7 +73,7 @@ async def reminder_callbacks(callback: CallbackQuery, state: FSMContext) -> None
         if data == "reminder:disable":
             await service.set_lesson_reminder_settings(user, enabled=False, minutes=user.lesson_reminder_minutes)
             await callback.message.edit_text(
-                "? Reminder Settings\n\nLesson reminders are disabled.",
+                "🔔 Reminder Settings\n\nLesson reminders are disabled.",
                 reply_markup=reminder_settings_inline_keyboard(selected_minutes=None),
             )
             await callback.answer("Disabled")

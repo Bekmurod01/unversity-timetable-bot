@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 from pathlib import Path
 import ssl
 from typing import Any
@@ -14,21 +15,29 @@ class EduPageAdapter:
 
     def __init__(self) -> None:
         self.settings = get_settings()
+        self.logger = logging.getLogger(__name__)
 
     def _load_local_snapshot(self) -> list[dict[str, Any]]:
         source = Path(self.settings.snapshot_source)
         if not source.exists():
+            self.logger.warning("Snapshot source not found: %s", source)
             return []
 
         with source.open("r", encoding="utf-8-sig") as f:
             data = json.load(f)
 
         if isinstance(data, dict) and "r" in data and "dbiAccessorRes" in data.get("r", {}):
-            return parse_regulartt_lessons(data)
+            lessons = parse_regulartt_lessons(data)
+            self.logger.info("Loaded %s lessons from EduPage-style local snapshot", len(lessons))
+            return lessons
         if isinstance(data, dict) and "lessons" in data:
-            return data["lessons"]
+            lessons = data["lessons"]
+            self.logger.info("Loaded %s lessons from normalized local snapshot", len(lessons))
+            return lessons
         if isinstance(data, list):
+            self.logger.info("Loaded %s lessons from list local snapshot", len(data))
             return data
+        self.logger.warning("Unsupported snapshot format in %s", source)
         return []
 
     async def _fetch_regulartt_live(self) -> list[dict[str, Any]]:
@@ -53,18 +62,28 @@ class EduPageAdapter:
             context = ssl._create_unverified_context()
 
         def _do_request() -> dict[str, Any]:
+            self.logger.info(
+                "EduPage request: url=%s term=%s cookie=%s ssl_verify=%s",
+                self.settings.edupage_regulartt_url,
+                self.settings.edupage_regulartt_term,
+                bool(self.settings.edupage_cookie.strip()),
+                self.settings.edupage_ssl_verify,
+            )
             with request.urlopen(req, timeout=30, context=context) as resp:
+                self.logger.info("EduPage response status=%s", getattr(resp, "status", "unknown"))
                 payload = resp.read().decode("utf-8-sig")
             return json.loads(payload)
 
         payload = await asyncio.to_thread(_do_request)
         lessons = parse_regulartt_lessons(payload)
+        self.logger.info("Parsed %s lessons from EduPage live payload", len(lessons))
 
         if lessons:
             source = Path(self.settings.snapshot_source)
             source.parent.mkdir(parents=True, exist_ok=True)
             with source.open("w", encoding="utf-8") as f:
                 json.dump({"lessons": lessons}, f, ensure_ascii=False)
+            self.logger.info("Updated local snapshot at %s", source)
 
         return lessons
 
@@ -73,6 +92,7 @@ class EduPageAdapter:
             live = await self._fetch_regulartt_live()
             if live:
                 return live
+            self.logger.warning("EduPage live fetch returned empty result, falling back to local snapshot")
         except Exception:
-            pass
+            self.logger.exception("EduPage live fetch failed, falling back to local snapshot")
         return self._load_local_snapshot()

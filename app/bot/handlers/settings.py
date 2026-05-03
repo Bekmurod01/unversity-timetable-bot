@@ -4,7 +4,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.keyboards import faculty_keyboard, group_selection_keyboard, settings_keyboard, year_keyboard
+from app.bot.keyboards import faculty_keyboard, group_selection_keyboard, main_menu_keyboard, settings_keyboard, year_keyboard
 from app.bot.states import SettingsFSM
 from app.db import SessionLocal
 from app.services.timetable_service import TimetableService
@@ -242,3 +242,15 @@ async def change_year_apply(message: Message, state: FSMContext) -> None:
 @router.message(F.text == "Change language")
 async def change_language(message: Message) -> None:
     await message.answer("🌐 Language module is future-ready and will be enabled in next version.")
+
+
+@router.message(F.text == "⬅️ Back")
+async def settings_back(message: Message, state: FSMContext) -> None:
+    await state.clear()
+    await message.answer("Main menu", reply_markup=main_menu_keyboard())
+
+
+@router.message(F.text == "🏠 Main Menu")
+async def settings_main_menu(message: Message, state: FSMContext) -> None:
+    await state.clear()
+    await message.answer("Main menu", reply_markup=main_menu_keyboard())

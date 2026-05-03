@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+import logging
 import re
 from typing import Any
 
 
 DAY_NAMES = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+logger = logging.getLogger(__name__)
 
 
 def _table_map(payload: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -38,7 +40,17 @@ def canonical_group_alias(group_name: str) -> str:
 
 
 def parse_regulartt_lessons(payload: dict[str, Any], status: str = "active") -> list[dict[str, str]]:
-    tables = _table_map(payload)
+    try:
+        tables = _table_map(payload)
+    except Exception:
+        logger.exception("Invalid EduPage payload shape. Expected r.dbiAccessorRes.tables")
+        return []
+
+    required_tables = ["periods", "subjects", "teachers", "classrooms", "classes", "lessons", "cards"]
+    missing = [name for name in required_tables if name not in tables]
+    if missing:
+        logger.error("Missing required EduPage tables: %s", missing)
+        return []
 
     periods = {str(x["period"]): x for x in tables["periods"]["data_rows"]}
     subjects = _to_name_map(tables["subjects"]["data_rows"], "name")
@@ -121,4 +133,14 @@ def parse_regulartt_lessons(payload: dict[str, Any], status: str = "active") -> 
         key = (row["group_name"], row["day"], row["start_time"], row["subject"])
         if key not in uniq:
             uniq[key] = row
-    return list(uniq.values())
+    parsed = list(uniq.values())
+    logger.info(
+        "EduPage parse summary: lessons=%s classes=%s subjects=%s teachers=%s rooms=%s cards=%s",
+        len(parsed),
+        len(classes),
+        len(subjects),
+        len(teachers),
+        len(rooms),
+        len(cards),
+    )
+    return parsed
