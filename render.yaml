@@ -12,7 +12,7 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python -m app.bot.main
+    startCommand: python -u -m app.bot.main
     autoDeploy: true
 
   - type: worker
@@ -20,5 +20,5 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python -m app.scheduler.worker
+    startCommand: python -u -m app.scheduler.worker
     autoDeploy: true
