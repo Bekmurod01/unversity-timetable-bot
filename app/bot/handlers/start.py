@@ -19,6 +19,13 @@ router = Router()
 GROUP_SUGGESTIONS = ["IT-202", "IT-201", "ACCA-201", "FIN-102", "BUS-301"]
 
 
+async def _ask_year_step(message: Message, state: FSMContext, group_name: str) -> None:
+    await state.update_data(group_name=group_name)
+    await state.set_state(RegistrationFSM.year)
+    await message.answer(f"✅ Group selected: {group_name}")
+    await message.answer("🎓 Select your year of study:", reply_markup=year_keyboard())
+
+
 @router.message(CommandStart())
 async def start_command(message: Message, state: FSMContext) -> None:
     await state.clear()
@@ -70,12 +77,21 @@ async def collect_faculty_callback(callback: CallbackQuery, state: FSMContext) -
     async with SessionLocal() as db:
         service = TimetableService(db)
         groups, total = await service.get_groups_by_faculty(faculty, page=1)
-    
+
     await state.set_state(RegistrationFSM.group_name)
-    await callback.message.edit_text(
-        f"🏢 Faculty: {faculty}\n\n👥 Select your group:",
-        reply_markup=group_selection_keyboard(groups, faculty, page=1, total=total)
-    )
+    if groups:
+        await callback.message.edit_text(
+            f"🏢 Faculty: {faculty}\n\n👥 Select your group:",
+            reply_markup=group_selection_keyboard(groups, faculty, page=1, total=total)
+        )
+    else:
+        suggestions = ", ".join(GROUP_SUGGESTIONS)
+        await callback.message.edit_text(
+            f"🏢 Faculty: {faculty}\n\n"
+            "👥 No groups were found in current data.\n"
+            "Please type your group manually (example: IT-202).\n\n"
+            f"Suggestions: {suggestions}"
+        )
     await callback.answer()
 
 
@@ -98,13 +114,8 @@ async def collect_group_pagination(callback: CallbackQuery, state: FSMContext) -
 @router.callback_query(RegistrationFSM.group_name, F.data.startswith("reg_group:"))
 async def collect_group_callback(callback: CallbackQuery, state: FSMContext) -> None:
     group_name = callback.data.split(":")[1]
-    await state.update_data(group_name=group_name)
-    
-    # Remove keyboard from the group selection message
-    await callback.message.edit_text(f"✅ Group selected: {group_name}")
-    
-    await state.set_state(RegistrationFSM.year)
-    await callback.message.answer("🎓 Select your year of study:", reply_markup=year_keyboard())
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await _ask_year_step(callback.message, state, group_name)
     await callback.answer()
 
 
@@ -130,7 +141,11 @@ async def collect_year(message: Message, state: FSMContext) -> None:
 
 @router.message(RegistrationFSM.group_name)
 async def collect_group_text_fallback(message: Message, state: FSMContext) -> None:
-    await message.answer("Please use the buttons to select your group.")
+    group_name = (message.text or "").strip().upper()
+    if len(group_name) < 2:
+        await message.answer("Please enter a valid group (example: IT-202).")
+        return
+    await _ask_year_step(message, state, group_name)
 
 
 @router.message(RegistrationFSM.confirmation)
