@@ -3,11 +3,21 @@ import logging
 import selectors
 import sys
 
-from aiogram import Bot, Dispatcher
+from aiogram import BaseMiddleware, Bot, Dispatcher
 from aiogram.types import ErrorEvent
+from sqlalchemy import text
 
 from app.bot.handlers import admin, exams, notifications, room_finder, settings, start, teachers, timetable
 from app.config import get_settings
+from app.db import engine
+
+
+class UpdateLogMiddleware(BaseMiddleware):
+    async def __call__(self, handler, event, data):
+        update_id = getattr(event, "update_id", None)
+        update_type = type(event).__name__
+        logging.info("Incoming update: id=%s type=%s", update_id, update_type)
+        return await handler(event, data)
 
 
 async def create_storage(redis_url: str | None):
@@ -51,6 +61,7 @@ async def run_bot() -> None:
         dp = Dispatcher(storage=storage)
     else:
         dp = Dispatcher()
+    dp.update.outer_middleware(UpdateLogMiddleware())
 
     @dp.error()
     async def on_error(event: ErrorEvent) -> None:
@@ -66,8 +77,21 @@ async def run_bot() -> None:
     dp.include_router(teachers.router)
     dp.include_router(admin.router)
 
-    me = await bot.get_me()
-    logging.info("Bot authorized successfully: @%s (id=%s)", me.username, me.id)
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        logging.info("Database connectivity check passed.")
+    except Exception:
+        logging.exception("Database connectivity check failed.")
+
+    while True:
+        try:
+            me = await bot.get_me()
+            logging.info("Bot authorized successfully: @%s (id=%s)", me.username, me.id)
+            break
+        except Exception:
+            logging.exception("Bot authorization check failed. Retrying in 5 seconds.")
+            await asyncio.sleep(5)
 
     # Ensure polling works even if webhook had been set previously.
     await bot.delete_webhook(drop_pending_updates=False)
