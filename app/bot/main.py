@@ -5,11 +5,9 @@ import sys
 
 from aiogram import BaseMiddleware, Bot, Dispatcher
 from aiogram.types import ErrorEvent
-from sqlalchemy import text
 
 from app.bot.handlers import admin, exams, notifications, room_finder, settings, start, teachers, timetable
 from app.config import get_settings
-from app.db import engine
 
 
 class UpdateLogMiddleware(BaseMiddleware):
@@ -49,10 +47,28 @@ async def create_storage(redis_url: str | None):
             return None
 
 
+def log_environment_validation() -> bool:
+    settings_obj = get_settings()
+    bot_token_ok = bool((settings_obj.bot_token or "").strip())
+    redis_present = bool((settings_obj.redis_url or "").strip())
+    database_present = bool((settings_obj.database_url or "").strip())
+
+    logging.info("Environment validation: BOT_TOKEN=%s REDIS_URL=%s DATABASE_URL=%s", bot_token_ok, redis_present, database_present)
+    if not bot_token_ok:
+        logging.error("BOT_TOKEN is missing. Bot cannot start polling without it.")
+    if not redis_present:
+        logging.warning("REDIS_URL is missing. Using MemoryStorage fallback for FSM.")
+    if not database_present:
+        logging.warning("DATABASE_URL is missing. DB layer will fallback to local sqlite per app.db.")
+    return bot_token_ok
+
+
 async def run_bot() -> None:
     settings_obj = get_settings()
-    if not settings_obj.bot_token.strip():
-        raise RuntimeError("BOT_TOKEN is empty. Set BOT_TOKEN in Render environment variables.")
+    if not log_environment_validation():
+        # Keep process alive with clear logs instead of crash-looping.
+        while True:
+            await asyncio.sleep(30)
 
     bot = Bot(token=settings_obj.bot_token)
 
@@ -78,6 +94,9 @@ async def run_bot() -> None:
     dp.include_router(admin.router)
 
     try:
+        from sqlalchemy import text
+        from app.db import engine
+
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))
         logging.info("Database connectivity check passed.")
@@ -94,8 +113,11 @@ async def run_bot() -> None:
             await asyncio.sleep(5)
 
     # Ensure polling works even if webhook had been set previously.
-    await bot.delete_webhook(drop_pending_updates=False)
-    logging.info("Webhook cleared. Starting bot polling.")
+    try:
+        await bot.delete_webhook(drop_pending_updates=False)
+        logging.info("Webhook cleared. Starting bot polling.")
+    except Exception:
+        logging.exception("Failed to clear webhook. Continuing to polling.")
 
     while True:
         try:
