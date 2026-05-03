@@ -36,6 +36,13 @@ async def admin_panel() -> FileResponse:
 async def startup_tasks() -> None:
     global BOT_TASK
     try:
+        from app.db import ensure_db_schema
+        await ensure_db_schema()
+        logger.info("Database schema ensured")
+    except Exception:
+        logger.exception("Failed ensuring database schema during API startup")
+
+    try:
         from app.config import get_settings
         settings = get_settings()
         if settings.bot_token and BOT_TASK is None:

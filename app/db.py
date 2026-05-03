@@ -24,3 +24,11 @@ Base = declarative_base()
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
+
+
+async def ensure_db_schema() -> None:
+    # Ensure model metadata is registered before create_all.
+    from app import models  # noqa: F401
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
