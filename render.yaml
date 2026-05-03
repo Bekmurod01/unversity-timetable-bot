@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: university-timetable-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.api.main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+
+  - type: worker
+    name: university-timetable-bot
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m app.bot.main
+    autoDeploy: true
+
+  - type: worker
+    name: university-timetable-scheduler
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m app.scheduler.worker
+    autoDeploy: true
