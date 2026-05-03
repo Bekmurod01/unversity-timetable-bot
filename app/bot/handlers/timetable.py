@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+﻿from datetime import datetime, timedelta
 
 from aiogram import F
 from aiogram import Router
@@ -26,7 +26,7 @@ def _format_lessons(title: str, lessons: list, show_group: bool = False) -> str:
     return "\n".join(rows)
 
 
-@router.message(F.text == "📅 My Timetable")
+@router.message(F.text.func(lambda t: bool(t) and "My Timetable" in t))
 async def my_timetable_menu(message: Message) -> None:
     await message.answer("Choose timetable mode:", reply_markup=timetable_mode_keyboard())
 
@@ -81,4 +81,9 @@ async def custom_day_result(message: Message) -> None:
 
 @router.message(F.text == "⬅️ Back")
 async def back_to_main(message: Message) -> None:
+    await message.answer("Main menu", reply_markup=main_menu_keyboard())
+
+
+@router.message(F.text == "🏠 Main Menu")
+async def main_menu_from_timetable(message: Message) -> None:
     await message.answer("Main menu", reply_markup=main_menu_keyboard())

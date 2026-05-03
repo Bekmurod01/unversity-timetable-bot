@@ -1,15 +1,9 @@
-from aiogram import F, Router
+﻿from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.keyboards import (
-    faculty_keyboard, 
-    group_selection_keyboard, 
-    main_menu_keyboard, 
-    year_keyboard, 
-    yes_no_keyboard
-)
+from app.bot.keyboards import faculty_keyboard, group_selection_keyboard, main_menu_keyboard, year_keyboard, yes_no_keyboard
 from app.bot.states import RegistrationFSM
 from app.db import SessionLocal
 from app.services.timetable_service import TimetableService
@@ -41,7 +35,7 @@ async def start_command(message: Message, state: FSMContext) -> None:
             f"🎓 Year: {user.year}\n"
             f"👥 Group: {user.group_name}\n\n"
             "You can update your profile in the ⚙️ Settings menu.",
-            reply_markup=main_menu_keyboard()
+            reply_markup=main_menu_keyboard(),
         )
         return
 
@@ -51,7 +45,7 @@ async def start_command(message: Message, state: FSMContext) -> None:
 
 @router.message(RegistrationFSM.full_name)
 async def collect_name(message: Message, state: FSMContext) -> None:
-    name = message.text.strip()
+    name = (message.text or "").strip()
     if len(name) < 3:
         await message.answer("Please enter a valid full name.")
         return
@@ -65,7 +59,6 @@ async def collect_name(message: Message, state: FSMContext) -> None:
 
 @router.message(RegistrationFSM.faculty)
 async def collect_faculty_text_fallback(message: Message, state: FSMContext) -> None:
-    # Handle text input if user types instead of clicking
     await message.answer("Please use the buttons to select your faculty.")
 
 
@@ -73,7 +66,7 @@ async def collect_faculty_text_fallback(message: Message, state: FSMContext) -> 
 async def collect_faculty_callback(callback: CallbackQuery, state: FSMContext) -> None:
     faculty = callback.data.split(":")[1]
     await state.update_data(faculty=faculty)
-    
+
     async with SessionLocal() as db:
         service = TimetableService(db)
         groups, total = await service.get_groups_by_faculty(faculty, page=1)
@@ -82,7 +75,7 @@ async def collect_faculty_callback(callback: CallbackQuery, state: FSMContext) -
     if groups:
         await callback.message.edit_text(
             f"🏢 Faculty: {faculty}\n\n👥 Select your group:",
-            reply_markup=group_selection_keyboard(groups, faculty, page=1, total=total)
+            reply_markup=group_selection_keyboard(groups, faculty, page=1, total=total),
         )
     else:
         suggestions = ", ".join(GROUP_SUGGESTIONS)
@@ -100,14 +93,12 @@ async def collect_group_pagination(callback: CallbackQuery, state: FSMContext) -
     parts = callback.data.split(":")
     faculty = parts[1]
     page = int(parts[2])
-    
+
     async with SessionLocal() as db:
         service = TimetableService(db)
         groups, total = await service.get_groups_by_faculty(faculty, page=page)
-    
-    await callback.message.edit_reply_markup(
-        reply_markup=group_selection_keyboard(groups, faculty, page=page, total=total)
-    )
+
+    await callback.message.edit_reply_markup(reply_markup=group_selection_keyboard(groups, faculty, page=page, total=total))
     await callback.answer()
 
 
@@ -121,14 +112,14 @@ async def collect_group_callback(callback: CallbackQuery, state: FSMContext) -> 
 
 @router.message(RegistrationFSM.year)
 async def collect_year(message: Message, state: FSMContext) -> None:
-    if not message.text.isdigit():
+    if not (message.text or "").isdigit():
         await message.answer("Please select a numeric year from buttons.")
         return
     await state.update_data(year=int(message.text))
-    
+
     data = await state.get_data()
     summary = (
-        f"📝 Please confirm your details:\n\n"
+        "📝 Please confirm your details:\n\n"
         f"👤 Name: {data['full_name']}\n"
         f"🏢 Faculty: {data['faculty']}\n"
         f"👥 Group: {data['group_name']}\n"
@@ -162,7 +153,6 @@ async def confirm_registration(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     async with SessionLocal() as db:
         service = TimetableService(db)
-        # Check again if user exists to prevent race conditions (though upsert handles it)
         await service.upsert_user(
             telegram_id=message.from_user.id,
             full_name=data["full_name"],
@@ -173,3 +163,30 @@ async def confirm_registration(message: Message, state: FSMContext) -> None:
 
     await state.clear()
     await message.answer("✅ Registration complete! Welcome to the University Timetable Bot.", reply_markup=main_menu_keyboard())
+
+
+@router.message(F.text.func(lambda t: bool(t) and "Favorites" in t))
+async def favorites_entry(message: Message) -> None:
+    await message.answer("Open 👨‍🏫 Teacher Timetable → ⭐ Favorite Teachers to manage favorites.")
+
+
+@router.message(F.text.func(lambda t: bool(t) and "Help" in t))
+async def help_entry(message: Message) -> None:
+    await message.answer(
+        "ℹ️ Help\n\n"
+        "Use /start to register.\n"
+        "Use 📅 My Timetable for daily/weekly schedule.\n"
+        "Use 👨‍🏫 Teacher Timetable to search teachers and favorites.\n"
+        "Use 🔔 Notifications to set reminders."
+    )
+
+
+@router.message(F.text.func(lambda t: bool(t) and "Announcements" in t))
+async def announcements_entry(message: Message) -> None:
+    await message.answer("📢 Announcements are managed by admins and will appear here.")
+
+
+@router.message(F.text == "🏠 Main Menu")
+async def home_entry(message: Message, state: FSMContext) -> None:
+    await state.clear()
+    await message.answer("Main menu", reply_markup=main_menu_keyboard())
