@@ -7,7 +7,12 @@ from app.config import get_settings
 
 
 settings = get_settings()
-engine = create_async_engine(settings.database_url, pool_pre_ping=True)
+database_url = (settings.database_url or "").strip()
+if not database_url:
+    # Keep service bootable when DATABASE_URL is not set (e.g., fresh Render web service).
+    # Web process can still bind PORT and serve /health while DB is configured.
+    database_url = "sqlite+aiosqlite:///./university_bot.db"
+engine = create_async_engine(database_url, pool_pre_ping=True)
 SessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
