@@ -1,7 +1,7 @@
 services:
   - type: web
     name: university-timetable-api
-    runtime: python
+    env: python
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.api.main:app --host 0.0.0.0 --port $PORT
@@ -9,7 +9,7 @@ services:
 
   - type: worker
     name: university-timetable-bot
-    runtime: python
+    env: python
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: python -m app.bot.main
@@ -17,7 +17,7 @@ services:
 
   - type: worker
     name: university-timetable-scheduler
-    runtime: python
+    env: python
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: python -m app.scheduler.worker
