@@ -15,6 +15,16 @@ async def health() -> dict:
     return {"status": "ok", "admin_router_loaded": ADMIN_ROUTER_LOADED}
 
 
+@app.get("/")
+async def root() -> dict:
+    return {
+        "status": "ok",
+        "message": "University Timetable API is running",
+        "health": "/health",
+        "admin_panel": "/admin-panel",
+    }
+
+
 @app.get("/admin-panel", include_in_schema=False)
 async def admin_panel() -> FileResponse:
     return FileResponse(BASE_DIR / "static" / "admin.html")
