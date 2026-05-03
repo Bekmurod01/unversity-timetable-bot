@@ -47,14 +47,14 @@ def nav_keyboard() -> ReplyKeyboardMarkup:
 
 def teacher_list_inline_keyboard(teachers: list[Teacher], page: int, total_pages: int) -> InlineKeyboardMarkup:
     rows: list[list[InlineKeyboardButton]] = [
-        [InlineKeyboardButton(text=t.name, callback_data=f"teacher_pick:{t.id}")]
+        [InlineKeyboardButton(text=t.name, callback_data=f"teacher_{t.id}")]
         for t in teachers
     ]
     nav_row: list[InlineKeyboardButton] = []
     if page > 1:
-        nav_row.append(InlineKeyboardButton(text=PREV_TEXT, callback_data=f"teacher_list_page:{page-1}"))
+        nav_row.append(InlineKeyboardButton(text=PREV_TEXT, callback_data=f"tpage_{page-1}"))
     if page < total_pages:
-        nav_row.append(InlineKeyboardButton(text=NEXT_TEXT, callback_data=f"teacher_list_page:{page+1}"))
+        nav_row.append(InlineKeyboardButton(text=NEXT_TEXT, callback_data=f"tpage_{page+1}"))
     if nav_row:
         rows.append(nav_row)
     return InlineKeyboardMarkup(inline_keyboard=rows)
@@ -91,12 +91,12 @@ def faculty_inline_keyboard(faculties: list[str]) -> InlineKeyboardMarkup:
         [
             InlineKeyboardButton(
                 text=_faculty_label(_normalize_faculty_value(code)),
-                callback_data=f"teacher_faculty:{_normalize_faculty_value(code)}",
+                callback_data=f"tfac_{_normalize_faculty_value(code)}",
             )
         ]
         for code in faculties
     ]
-    rows.append([InlineKeyboardButton(text=BACK_TEXT, callback_data="teacher_faculty_back")])
+    rows.append([InlineKeyboardButton(text=BACK_TEXT, callback_data="tfac_back")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
@@ -105,15 +105,19 @@ def teacher_action_keyboard(is_favorite: bool, notifications_enabled: bool, teac
     notif_text = "\U0001F515 Disable Notifications" if notifications_enabled else "\U0001F514 Enable Notifications"
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="\U0001F4C5 View Schedule", callback_data=f"teacher_action:view:{teacher_id}")],
-            [InlineKeyboardButton(text=fav_text, callback_data=f"teacher_action:fav:{teacher_id}")],
-            [InlineKeyboardButton(text=notif_text, callback_data=f"teacher_action:notif:{teacher_id}")],
+            [InlineKeyboardButton(text="\U0001F4C5 View Schedule", callback_data=f"tview_{teacher_id}")],
+            [InlineKeyboardButton(text=fav_text, callback_data=f"tfav_{teacher_id}")],
+            [InlineKeyboardButton(text=notif_text, callback_data=f"notify_{teacher_id}")],
             [
-                InlineKeyboardButton(text=BACK_TEXT, callback_data="teacher_action:back"),
-                InlineKeyboardButton(text=MAIN_MENU_TEXT, callback_data="teacher_action:main"),
+                InlineKeyboardButton(text=BACK_TEXT, callback_data="tback"),
+                InlineKeyboardButton(text=MAIN_MENU_TEXT, callback_data="tmain"),
             ],
         ]
     )
+
+
+def _extract_int_suffix(data: str, prefix: str) -> int:
+    return int(data[len(prefix) :])
 
 
 def _format_teacher_card(teacher: Teacher) -> str:
@@ -239,43 +243,51 @@ async def search_teacher_start(message: Message, state: FSMContext) -> None:
     await message.answer("Select faculty:", reply_markup=faculty_inline_keyboard(faculties))
 
 
-@router.callback_query(F.data == "teacher_faculty_back")
+@router.callback_query(F.data.func(lambda d: bool(d) and d in {"tfac_back", "teacher_faculty_back"}))
 async def faculty_back(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    await state.clear()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await callback.message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
-    await callback.answer()
+    try:
+        await state.clear()
+        await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
+    except Exception:
+        logger.exception("teacher faculty back failed callback=%s user=%s", callback.data, callback.from_user.id)
+    finally:
+        await callback.answer()
 
 
-@router.callback_query(F.data.startswith("teacher_faculty:"))
+@router.callback_query(F.data.func(lambda d: bool(d) and (d.startswith("tfac_") or d.startswith("teacher_faculty:"))))
 async def faculty_selected(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    faculty = _normalize_faculty_value(callback.data.split(":", 1)[1])
+    try:
+        raw = callback.data or ""
+        faculty = _normalize_faculty_value(raw[5:] if raw.startswith("tfac_") else raw.split(":", 1)[1])
 
-    async with SessionLocal() as db:
-        service = TimetableService(db)
-        filtered = await service.get_teachers_by_faculty(faculty)
-    logger.debug("Faculty selected=%s, matched_teachers=%d", faculty, len(filtered))
+        async with SessionLocal() as db:
+            service = TimetableService(db)
+            filtered = await service.get_teachers_by_faculty(faculty)
+        logger.debug("Faculty selected=%s, matched_teachers=%d", faculty, len(filtered))
 
-    await callback.message.edit_reply_markup(reply_markup=None)
+        await callback.message.edit_reply_markup(reply_markup=None)
 
-    if not filtered:
-        await state.update_data(last_screen="teacher_list", teacher_list=[], teacher_page=1, teacher_total_pages=1)
-        await callback.message.answer(f"No teachers found for {faculty} faculty.", reply_markup=nav_keyboard())
+        if not filtered:
+            await state.update_data(last_screen="teacher_list", teacher_list=[], teacher_page=1, teacher_total_pages=1)
+            await callback.message.answer(f"No teachers found for {faculty} faculty.", reply_markup=nav_keyboard())
+            return
+
+        heading = f"\U0001F468\u200d\U0001F3EB {faculty.title()} Faculty Teachers"
+        await state.update_data(
+            last_screen="teacher_list",
+            teacher_list=[t.id for t in filtered],
+            teacher_page=1,
+            teacher_total_pages=1,
+            teacher_list_heading=heading,
+        )
+        await _render_teacher_list_message(callback.message, state, heading, page=1)
+    except Exception:
+        logger.exception("teacher faculty select failed callback=%s user=%s", callback.data, callback.from_user.id)
+    finally:
         await callback.answer()
-        return
-
-    heading = f"\U0001F468\u200d\U0001F3EB {faculty.title()} Faculty Teachers"
-    await state.update_data(
-        last_screen="teacher_list",
-        teacher_list=[t.id for t in filtered],
-        teacher_page=1,
-        teacher_total_pages=1,
-        teacher_list_heading=heading,
-    )
-    await _render_teacher_list_message(callback.message, state, heading, page=1)
-    await callback.answer()
 
 
 @router.message(F.text == ALL_TEACHERS_TEXT)
@@ -348,111 +360,158 @@ async def recent_searches(message: Message, state: FSMContext) -> None:
     await _render_teacher_list_message(message, state, heading, page=1)
 
 
-@router.callback_query(F.data.startswith("teacher_list_page:"))
+@router.callback_query(F.data.func(lambda d: bool(d) and (d.startswith("tpage_") or d.startswith("teacher_list_page:"))))
 async def paginate_teacher_list_callback(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     try:
-        page = int(callback.data.split(":", 1)[1])
+        raw = callback.data or ""
+        page = _extract_int_suffix(raw, "tpage_") if raw.startswith("tpage_") else int(raw.split(":", 1)[1])
     except Exception:
         await callback.answer("Invalid page.")
         return
 
-    data = await state.get_data()
-    heading = data.get("teacher_list_heading", "Teachers")
-    if not (data.get("teacher_list") or []):
-        await callback.answer("No active list.")
-        return
+    try:
+        data = await state.get_data()
+        heading = data.get("teacher_list_heading", "Teachers")
+        if not (data.get("teacher_list") or []):
+            await callback.answer("No active list.")
+            return
 
-    await _render_teacher_list_message(callback.message, state, heading, page=page)
-    await callback.answer()
+        await _render_teacher_list_message(callback.message, state, heading, page=page)
+    except Exception:
+        logger.exception("teacher pagination failed callback=%s user=%s", callback.data, callback.from_user.id)
+    finally:
+        await callback.answer()
 
 
-@router.callback_query(F.data.startswith("teacher_pick:"))
+@router.callback_query(
+    F.data.func(
+        lambda d: bool(d)
+        and (d.startswith("teacher_") or d.startswith("teacher_pick:"))
+        and not d.startswith("teacher_action:")
+        and not d.startswith("teacher_list_page:")
+        and not d.startswith("teacher_faculty:")
+    )
+)
 async def teacher_pick_callback(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    teacher_id = int(callback.data.split(":", 1)[1])
-    async with SessionLocal() as db:
-        service = TimetableService(db)
-        teacher = await service.get_teacher_by_id(teacher_id)
-        if not teacher:
-            await callback.answer("Teacher not found.")
-            return
-        user = await service.get_user(callback.from_user.id)
-        if user:
-            await service.add_recent_search(user.id, teacher.id)
+    try:
+        raw = callback.data or ""
+        teacher_id = _extract_int_suffix(raw, "teacher_") if raw.startswith("teacher_") else int(raw.split(":", 1)[1])
+        async with SessionLocal() as db:
+            service = TimetableService(db)
+            teacher = await service.get_teacher_by_id(teacher_id)
+            logger.info("teacher lookup id=%s found=%s", teacher_id, bool(teacher))
+            if not teacher:
+                await callback.answer("Teacher not found.")
+                return
+            user = await service.get_user(callback.from_user.id)
+            if user:
+                await service.add_recent_search(user.id, teacher.id)
 
-    await callback.answer()
-    await _show_teacher_detail(callback.message, state, teacher)
+        await _show_teacher_detail(callback.message, state, teacher)
+    except Exception:
+        logger.exception("teacher pick failed callback=%s user=%s", callback.data, callback.from_user.id)
+    finally:
+        await callback.answer()
 
 
-@router.callback_query(F.data.startswith("teacher_action:view:"))
+@router.callback_query(F.data.func(lambda d: bool(d) and (d.startswith("tview_") or d.startswith("teacher_action:view:"))))
 async def teacher_view_schedule(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    teacher_id = int(callback.data.split(":")[-1])
-    async with SessionLocal() as db:
-        service = TimetableService(db)
-        teacher = await service.get_teacher_by_id(teacher_id)
-        if not teacher:
-            await callback.answer("Teacher not found.")
-            return
-        lessons = await service.get_teacher_timetable(teacher.name)
+    try:
+        raw = callback.data or ""
+        teacher_id = _extract_int_suffix(raw, "tview_") if raw.startswith("tview_") else int(raw.split(":")[-1])
+        async with SessionLocal() as db:
+            service = TimetableService(db)
+            teacher = await service.get_teacher_by_id(teacher_id)
+            logger.info("teacher schedule lookup id=%s found=%s", teacher_id, bool(teacher))
+            if not teacher:
+                await callback.answer("Teacher not found.")
+                return
+            lessons = await service.get_teacher_timetable(teacher.name)
 
-    await callback.message.answer(_format_teacher_schedule(teacher.name, lessons), reply_markup=nav_keyboard())
-    await callback.answer()
+        await callback.message.answer(_format_teacher_schedule(teacher.name, lessons), reply_markup=nav_keyboard())
+    except Exception:
+        logger.exception("teacher schedule failed callback=%s user=%s", callback.data, callback.from_user.id)
+    finally:
+        await callback.answer()
 
 
-@router.callback_query(F.data.startswith("teacher_action:fav:"))
+@router.callback_query(F.data.func(lambda d: bool(d) and (d.startswith("tfav_") or d.startswith("teacher_action:fav:"))))
 async def teacher_toggle_favorite(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    teacher_id = int(callback.data.split(":")[-1])
-    async with SessionLocal() as db:
-        service = TimetableService(db)
-        user = await service.get_user(callback.from_user.id)
-        if not user:
-            await callback.answer("Please register first.")
-            return
+    try:
+        raw = callback.data or ""
+        teacher_id = _extract_int_suffix(raw, "tfav_") if raw.startswith("tfav_") else int(raw.split(":")[-1])
+        async with SessionLocal() as db:
+            service = TimetableService(db)
+            user = await service.get_user(callback.from_user.id)
+            if not user:
+                await callback.answer("Please register first.")
+                return
 
-        added = await service.toggle_favorite_teacher(user.id, teacher_id)
-        teacher = await service.get_teacher_by_id(teacher_id)
+            added = await service.toggle_favorite_teacher(user.id, teacher_id)
+            teacher = await service.get_teacher_by_id(teacher_id)
+            logger.info("teacher favorite toggle id=%s added=%s found=%s", teacher_id, added, bool(teacher))
 
-    await callback.answer("\u2B50 Added to favorites." if added else "\u274C Removed from favorites.")
-    if teacher:
-        await _show_teacher_detail(callback.message, state, teacher)
+        await callback.answer("\u2B50 Added to favorites." if added else "\u274C Removed from favorites.")
+        if teacher:
+            await _show_teacher_detail(callback.message, state, teacher)
+    except Exception:
+        logger.exception("teacher favorite toggle failed callback=%s user=%s", callback.data, callback.from_user.id)
+        await callback.answer("Action failed.")
 
 
-@router.callback_query(F.data.startswith("teacher_action:notif:"))
+@router.callback_query(
+    F.data.func(lambda d: bool(d) and (d.startswith("notify_") or d.startswith("teacher_action:notif:")))
+)
 async def teacher_toggle_notifications(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    teacher_id = int(callback.data.split(":")[-1])
-    async with SessionLocal() as db:
-        service = TimetableService(db)
-        user = await service.get_user(callback.from_user.id)
-        if not user:
-            await callback.answer("Please register first.")
-            return
+    try:
+        raw = callback.data or ""
+        teacher_id = _extract_int_suffix(raw, "notify_") if raw.startswith("notify_") else int(raw.split(":")[-1])
+        async with SessionLocal() as db:
+            service = TimetableService(db)
+            user = await service.get_user(callback.from_user.id)
+            if not user:
+                await callback.answer("Please register first.")
+                return
 
-        enabled = await service.toggle_teacher_notifications(user.id, teacher_id)
-        teacher = await service.get_teacher_by_id(teacher_id)
+            enabled = await service.toggle_teacher_notifications(user.id, teacher_id)
+            teacher = await service.get_teacher_by_id(teacher_id)
+            logger.info("teacher notify toggle id=%s enabled=%s found=%s", teacher_id, enabled, bool(teacher))
 
-    await callback.answer("\U0001F514 Notifications enabled." if enabled else "\U0001F515 Notifications disabled.")
-    if teacher:
-        await _show_teacher_detail(callback.message, state, teacher)
+        await callback.answer("\U0001F514 Notifications enabled." if enabled else "\U0001F515 Notifications disabled.")
+        if teacher:
+            await _show_teacher_detail(callback.message, state, teacher)
+    except Exception:
+        logger.exception("teacher notification toggle failed callback=%s user=%s", callback.data, callback.from_user.id)
+        await callback.answer("Action failed.")
 
 
-@router.callback_query(F.data == "teacher_action:back")
+@router.callback_query(F.data.func(lambda d: bool(d) and d in {"tback", "teacher_action:back"}))
 async def teacher_action_back(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    await state.clear()
-    await callback.message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
-    await callback.answer()
+    try:
+        await state.clear()
+        await callback.message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
+    except Exception:
+        logger.exception("teacher action back failed callback=%s user=%s", callback.data, callback.from_user.id)
+    finally:
+        await callback.answer()
 
 
-@router.callback_query(F.data == "teacher_action:main")
+@router.callback_query(F.data.func(lambda d: bool(d) and d in {"tmain", "teacher_action:main"}))
 async def teacher_action_main(callback: CallbackQuery, state: FSMContext) -> None:
     logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
-    await state.clear()
-    await callback.message.answer("Main Menu", reply_markup=main_menu_keyboard())
-    await callback.answer()
+    try:
+        await state.clear()
+        await callback.message.answer("Main Menu", reply_markup=main_menu_keyboard())
+    except Exception:
+        logger.exception("teacher action main failed callback=%s user=%s", callback.data, callback.from_user.id)
+    finally:
+        await callback.answer()
 
 
 @router.message(NavigationFSM.teacher_menu, F.text == BACK_TEXT)
