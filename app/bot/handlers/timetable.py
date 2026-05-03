@@ -2,9 +2,11 @@
 
 from aiogram import F
 from aiogram import Router
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from app.bot.keyboards import day_picker_keyboard, main_menu_keyboard, timetable_mode_keyboard
+from app.bot.states import NavigationFSM
 from app.db import SessionLocal
 from app.services.timetable_service import TimetableService
 
@@ -27,12 +29,14 @@ def _format_lessons(title: str, lessons: list, show_group: bool = False) -> str:
 
 
 @router.message(F.text.func(lambda t: bool(t) and "My Timetable" in t))
-async def my_timetable_menu(message: Message) -> None:
+async def my_timetable_menu(message: Message, state: FSMContext) -> None:
+    await state.set_state(NavigationFSM.timetable_menu)
     await message.answer("Choose timetable mode:", reply_markup=timetable_mode_keyboard())
 
 
 @router.message(F.text.in_({"Today", "Tomorrow", "Weekly"}))
-async def timetable_mode(message: Message) -> None:
+async def timetable_mode(message: Message, state: FSMContext) -> None:
+    await state.set_state(NavigationFSM.timetable_menu)
     async with SessionLocal() as db:
         service = TimetableService(db)
         user = await service.get_user(message.from_user.id)
@@ -62,12 +66,14 @@ async def timetable_mode(message: Message) -> None:
 
 
 @router.message(F.text == "Custom Day")
-async def custom_day(message: Message) -> None:
+async def custom_day(message: Message, state: FSMContext) -> None:
+    await state.set_state(NavigationFSM.timetable_menu)
     await message.answer("Pick a day:", reply_markup=day_picker_keyboard())
 
 
 @router.message(F.text.regexp(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$"))
-async def custom_day_result(message: Message) -> None:
+async def custom_day_result(message: Message, state: FSMContext) -> None:
+    await state.set_state(NavigationFSM.timetable_menu)
     day = message.text.lower()
     async with SessionLocal() as db:
         service = TimetableService(db)
@@ -79,11 +85,13 @@ async def custom_day_result(message: Message) -> None:
         await message.answer(_format_lessons(f"{message.text} timetable", lessons), reply_markup=timetable_mode_keyboard())
 
 
-@router.message(F.text == "⬅️ Back")
-async def back_to_main(message: Message) -> None:
+@router.message(NavigationFSM.timetable_menu, F.text == "⬅️ Back")
+async def back_to_main(message: Message, state: FSMContext) -> None:
+    await state.clear()
     await message.answer("Main menu", reply_markup=main_menu_keyboard())
 
 
-@router.message(F.text == "🏠 Main Menu")
-async def main_menu_from_timetable(message: Message) -> None:
+@router.message(NavigationFSM.timetable_menu, F.text == "🏠 Main Menu")
+async def main_menu_from_timetable(message: Message, state: FSMContext) -> None:
+    await state.clear()
     await message.answer("Main menu", reply_markup=main_menu_keyboard())

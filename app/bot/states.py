@@ -23,3 +23,8 @@ class SettingsFSM(StatesGroup):
     waiting_faculty = State()
     waiting_year = State()
     waiting_reminder_minutes = State()
+
+
+class NavigationFSM(StatesGroup):
+    timetable_menu = State()
+    teacher_menu = State()

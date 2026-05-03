@@ -1,5 +1,6 @@
 from datetime import datetime, time
 import re
+import logging
 
 from sqlalchemy import Select, and_, delete, distinct, func, or_, select
 from sqlalchemy.orm import selectinload
@@ -9,6 +10,7 @@ from app.models import ExamDeadline, FavoriteTeacher, RecentSearch, Teacher, Tim
 
 
 WEEK_DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+logger = logging.getLogger(__name__)
 
 
 def _parse_time(value: str) -> time:
@@ -182,7 +184,9 @@ class TimetableService:
             token = str(group_name).strip().upper().split("-", 1)[0]
             if token:
                 faculties.add(token)
-        return sorted(faculties)
+        result = sorted(faculties)
+        logger.info("get_available_faculties rows=%s faculties=%s", len(rows), result)
+        return result
 
     async def get_teacher_faculties(self) -> list[str]:
         rows = (
@@ -224,17 +228,34 @@ class TimetableService:
         return list((await self.db.execute(teacher_stmt)).scalars().all())
 
     async def get_groups_by_faculty(self, faculty: str, page: int = 1, page_size: int = 20) -> tuple[list[str], int]:
-        stmt = select(distinct(TimetableLesson.group_name)).where(TimetableLesson.group_name.ilike(f"{faculty}%")).order_by(TimetableLesson.group_name)
-        
+        normalized = (faculty or "").strip().upper()
+        if not normalized:
+            return [], 0
+        like_pattern = f"{normalized}-%"
+        stmt = (
+            select(distinct(TimetableLesson.group_name))
+            .where(func.upper(func.trim(TimetableLesson.group_name)).like(like_pattern))
+            .order_by(TimetableLesson.group_name)
+        )
+
         # Count total
-        from sqlalchemy import func
         count_stmt = select(func.count()).select_from(stmt.subquery())
         total = (await self.db.execute(count_stmt)).scalar() or 0
-        
+
         # Paginate
         stmt = stmt.offset((page - 1) * page_size).limit(page_size)
         rows = (await self.db.execute(stmt)).scalars().all()
-        return [str(x) for x in rows], total
+        groups = [str(x).strip().upper() for x in rows if str(x).strip()]
+        logger.info(
+            "get_groups_by_faculty faculty=%s pattern=%s page=%s page_size=%s total=%s groups=%s",
+            normalized,
+            like_pattern,
+            page,
+            page_size,
+            total,
+            groups[:10],
+        )
+        return groups, total
 
     async def search_teachers(self, query: str | None = None, limit: int | None = 30) -> list[Teacher]:
         stmt = select(Teacher).order_by(Teacher.name)

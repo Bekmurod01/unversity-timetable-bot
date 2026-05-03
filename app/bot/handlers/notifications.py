@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -31,6 +33,7 @@ async def notifications_menu(message: Message) -> None:
 
 @router.callback_query(F.data.startswith("reminder:"))
 async def reminder_callbacks(callback: CallbackQuery, state: FSMContext) -> None:
+    logging.info("notifications.callback user=%s data=%s", callback.from_user.id, callback.data)
     if not callback.message:
         await callback.answer()
         return

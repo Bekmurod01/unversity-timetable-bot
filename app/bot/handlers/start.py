@@ -1,4 +1,5 @@
-﻿from aiogram import F, Router
+﻿import logging
+from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -54,6 +55,10 @@ async def collect_name(message: Message, state: FSMContext) -> None:
     async with SessionLocal() as db:
         service = TimetableService(db)
         faculties = await service.get_available_faculties()
+    logging.info("Loaded faculties for registration: %s", faculties)
+    if not faculties:
+        await message.answer("No faculties are available right now. Please try again later.")
+        return
     await message.answer("🏢 Choose your faculty:", reply_markup=faculty_keyboard(faculties))
 
 
@@ -64,12 +69,15 @@ async def collect_faculty_text_fallback(message: Message, state: FSMContext) -> 
 
 @router.callback_query(RegistrationFSM.faculty, F.data.startswith("reg_faculty:"))
 async def collect_faculty_callback(callback: CallbackQuery, state: FSMContext) -> None:
-    faculty = callback.data.split(":")[1]
+    logging.info("registration.callback user=%s data=%s", callback.from_user.id, callback.data)
+    faculty = callback.data.split(":", 1)[1]
+    logging.info("User %s selected faculty via callback: %s", callback.from_user.id, faculty)
     await state.update_data(faculty=faculty)
 
     async with SessionLocal() as db:
         service = TimetableService(db)
         groups, total = await service.get_groups_by_faculty(faculty, page=1)
+    logging.info("Groups loaded for faculty %s: total=%s groups_sample=%s", faculty, total, groups[:10])
 
     await state.set_state(RegistrationFSM.group_name)
     if groups:
@@ -90,13 +98,16 @@ async def collect_faculty_callback(callback: CallbackQuery, state: FSMContext) -
 
 @router.callback_query(RegistrationFSM.group_name, F.data.startswith("reg_group_page:"))
 async def collect_group_pagination(callback: CallbackQuery, state: FSMContext) -> None:
+    logging.info("registration.callback user=%s data=%s", callback.from_user.id, callback.data)
     parts = callback.data.split(":")
     faculty = parts[1]
     page = int(parts[2])
+    logging.info("Pagination callback for faculty=%s page=%s user=%s", faculty, page, callback.from_user.id)
 
     async with SessionLocal() as db:
         service = TimetableService(db)
         groups, total = await service.get_groups_by_faculty(faculty, page=page)
+    logging.info("Loaded groups page %s for %s: %s", page, faculty, groups)
 
     await callback.message.edit_reply_markup(reply_markup=group_selection_keyboard(groups, faculty, page=page, total=total))
     await callback.answer()
@@ -104,7 +115,8 @@ async def collect_group_pagination(callback: CallbackQuery, state: FSMContext) -
 
 @router.callback_query(RegistrationFSM.group_name, F.data.startswith("reg_group:"))
 async def collect_group_callback(callback: CallbackQuery, state: FSMContext) -> None:
-    group_name = callback.data.split(":")[1]
+    logging.info("registration.callback user=%s data=%s", callback.from_user.id, callback.data)
+    group_name = callback.data.split(":", 1)[1]
     await callback.message.edit_reply_markup(reply_markup=None)
     await _ask_year_step(callback.message, state, group_name)
     await callback.answer()

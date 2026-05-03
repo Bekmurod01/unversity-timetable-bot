@@ -1,9 +1,6 @@
 ﻿from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 
-DEFAULT_FACULTIES = ["IT", "Business", "Finance", "ACCA"]
-
-
 def main_menu_keyboard() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
@@ -17,7 +14,7 @@ def main_menu_keyboard() -> ReplyKeyboardMarkup:
 
 
 def faculty_keyboard(faculties: list[str] | None = None, prefix: str = "reg_faculty") -> InlineKeyboardMarkup:
-    options = faculties or DEFAULT_FACULTIES
+    options = faculties or []
     buttons = [[InlineKeyboardButton(text=x, callback_data=f"{prefix}:{x}")] for x in options]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 

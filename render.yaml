@@ -1,4 +1,9 @@
 services:
+  - type: redis
+    name: university-timetable-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+
   - type: web
     name: university-timetable-api
     env: python
@@ -14,6 +19,12 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: python -u -m app.bot.main
     autoDeploy: true
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: university-timetable-redis
+          property: connectionString
 
   - type: worker
     name: university-timetable-scheduler
@@ -22,3 +33,9 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: python -u -m app.scheduler.worker
     autoDeploy: true
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: university-timetable-redis
+          property: connectionString

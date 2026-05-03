@@ -9,11 +9,46 @@ from app.bot.handlers import admin, exams, notifications, room_finder, settings,
 from app.config import get_settings
 
 
+async def create_storage(redis_url: str | None):
+    if not redis_url:
+        logging.warning("REDIS_URL is not set. Falling back to in-memory FSM storage (not restart-safe).")
+        try:
+            from aiogram.fsm.storage.memory import MemoryStorage
+
+            return MemoryStorage()
+        except Exception:
+            return None
+    try:
+        # Lazy import to avoid hard dependency issues in environments without redis
+        from redis.asyncio import Redis as AioredisClient
+        from aiogram.fsm.storage.redis import RedisStorage
+
+        redis_client = AioredisClient.from_url(redis_url, decode_responses=True)
+        await redis_client.ping()
+        storage = RedisStorage(redis=redis_client)
+        logging.info("Using RedisStorage for FSM (REDIS_URL=%s)", redis_url)
+        return storage
+    except Exception as e:
+        logging.exception("Failed to initialize RedisStorage, falling back to MemoryStorage: %s", e)
+        try:
+            from aiogram.fsm.storage.memory import MemoryStorage
+
+            return MemoryStorage()
+        except Exception:
+            return None
+
+
 async def run_bot() -> None:
     settings_obj = get_settings()
     bot = Bot(token=settings_obj.bot_token)
-    dp = Dispatcher()
 
+    storage = await create_storage(settings_obj.redis_url)
+    if storage:
+        dp = Dispatcher(storage=storage)
+    else:
+        dp = Dispatcher()
+
+    # register routers
     dp.include_router(start.router)
     dp.include_router(timetable.router)
     dp.include_router(notifications.router)
@@ -23,11 +58,14 @@ async def run_bot() -> None:
     dp.include_router(teachers.router)
     dp.include_router(admin.router)
 
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, drop_pending_updates=True)
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+    )
     if sys.platform.startswith("win"):
         asyncio.run(run_bot(), loop_factory=lambda: asyncio.SelectorEventLoop(selectors.SelectSelector()))
     else:

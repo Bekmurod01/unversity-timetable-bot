@@ -1,8 +1,9 @@
 ﻿from datetime import datetime
+import logging
 
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from app.bot.keyboards import main_menu_keyboard, timetable_mode_keyboard
 from app.bot.states import RoomFinderFSM
@@ -32,7 +33,8 @@ async def room_finder_prompt(message: Message, state: FSMContext) -> None:
 
 
 @router.callback_query(F.data == "room_back")
-async def room_back(callback, state: FSMContext):
+async def room_back(callback: CallbackQuery, state: FSMContext):
+    logging.info("room_back clicked by user=%s", callback.from_user.id)
     await state.clear()
     await callback.message.edit_reply_markup(reply_markup=None)
     await callback.message.answer("Main menu", reply_markup=main_menu_keyboard())
@@ -40,7 +42,8 @@ async def room_back(callback, state: FSMContext):
 
 
 @router.callback_query(F.data == "room_home")
-async def room_home(callback, state: FSMContext):
+async def room_home(callback: CallbackQuery, state: FSMContext):
+    logging.info("room_home clicked by user=%s", callback.from_user.id)
     await state.clear()
     await callback.message.edit_reply_markup(reply_markup=None)
     await callback.message.answer("Main menu", reply_markup=main_menu_keyboard())
@@ -48,7 +51,8 @@ async def room_home(callback, state: FSMContext):
 
 
 @router.callback_query(F.data == "room_today")
-async def room_today(callback, state: FSMContext):
+async def room_today(callback: CallbackQuery, state: FSMContext):
+    logging.info("room_today callback data=%s user=%s", callback.data, callback.from_user.id)
     now = datetime.now()
     day = now.strftime("%A").lower()
     current_time = now.time().replace(second=0, microsecond=0)
@@ -78,7 +82,8 @@ async def room_today(callback, state: FSMContext):
 
 
 @router.callback_query(F.data == "room_week")
-async def room_week(callback, state: FSMContext):
+async def room_week(callback: CallbackQuery, state: FSMContext):
+    logging.info("room_week clicked by user=%s", callback.from_user.id)
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     kb = InlineKeyboardMarkup(
         inline_keyboard=[[InlineKeyboardButton(text=day, callback_data=f"room_week_day:{day}")] for day in days]
@@ -89,8 +94,9 @@ async def room_week(callback, state: FSMContext):
 
 
 @router.callback_query(F.data.startswith("room_week_day:"))
-async def room_week_day(callback, state: FSMContext):
-    day = callback.data.split(":")[1].lower()
+async def room_week_day(callback: CallbackQuery, state: FSMContext):
+    logging.info("room_week_day callback data=%s user=%s", callback.data, callback.from_user.id)
+    day = callback.data.split(":", 1)[1].lower()
     async with SessionLocal() as db:
         service = TimetableService(db)
         lessons = await service.get_timetable(None, day=day)
@@ -111,7 +117,8 @@ async def room_week_day(callback, state: FSMContext):
 
 
 @router.callback_query(F.data.startswith("room_week_time:"))
-async def room_week_time(callback, state: FSMContext):
+async def room_week_time(callback: CallbackQuery, state: FSMContext):
+    logging.info("room_week_time callback data=%s user=%s", callback.data, callback.from_user.id)
     import datetime as dt
 
     _, day, time_range = callback.data.split(":")
@@ -145,6 +152,7 @@ async def room_week_time(callback, state: FSMContext):
 
 @router.message(RoomFinderFSM.waiting_room)
 async def room_finder_result(message: Message, state: FSMContext) -> None:
+    logging.info("room_finder manual lookup by user=%s room=%s", message.from_user.id, message.text)
     room = message.text.strip()
     now = datetime.now()
     day = now.strftime("%A").lower()

@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, Message, ReplyKeyboardMarkup
 
 from app.bot.keyboards import main_menu_keyboard
+from app.bot.states import NavigationFSM
 from app.db import SessionLocal
 from app.models import Teacher
 from app.services.timetable_service import TimetableService
@@ -200,13 +201,13 @@ async def _render_teacher_list_message(message: Message, state: FSMContext, head
 
 @router.message(F.text.func(lambda t: bool(t) and "Teacher Timetable" in t))
 async def teacher_main_menu(message: Message, state: FSMContext) -> None:
-    await state.clear()
+    await state.set_state(NavigationFSM.teacher_menu)
     await message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
 
 
 @router.message(F.text == SEARCH_TEACHER_TEXT)
 async def search_teacher_start(message: Message, state: FSMContext) -> None:
-    await state.clear()
+    await state.set_state(NavigationFSM.teacher_menu)
     await state.update_data(last_screen="faculty_select")
     async with SessionLocal() as db:
         service = TimetableService(db)
@@ -240,6 +241,7 @@ async def search_teacher_start(message: Message, state: FSMContext) -> None:
 
 @router.callback_query(F.data == "teacher_faculty_back")
 async def faculty_back(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     await state.clear()
     await callback.message.edit_reply_markup(reply_markup=None)
     await callback.message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
@@ -248,6 +250,7 @@ async def faculty_back(callback: CallbackQuery, state: FSMContext) -> None:
 
 @router.callback_query(F.data.startswith("teacher_faculty:"))
 async def faculty_selected(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     faculty = _normalize_faculty_value(callback.data.split(":", 1)[1])
 
     async with SessionLocal() as db:
@@ -277,6 +280,7 @@ async def faculty_selected(callback: CallbackQuery, state: FSMContext) -> None:
 
 @router.message(F.text == ALL_TEACHERS_TEXT)
 async def all_teachers(message: Message, state: FSMContext) -> None:
+    await state.set_state(NavigationFSM.teacher_menu)
     async with SessionLocal() as db:
         service = TimetableService(db)
         teachers = await service.get_teachers()
@@ -299,6 +303,7 @@ async def all_teachers(message: Message, state: FSMContext) -> None:
 
 @router.message(F.text == FAVORITES_TEXT)
 async def favorite_teachers(message: Message, state: FSMContext) -> None:
+    await state.set_state(NavigationFSM.teacher_menu)
     async with SessionLocal() as db:
         service = TimetableService(db)
         user = await service.get_user(message.from_user.id)
@@ -322,6 +327,7 @@ async def favorite_teachers(message: Message, state: FSMContext) -> None:
 
 @router.message(F.text == RECENT_TEXT)
 async def recent_searches(message: Message, state: FSMContext) -> None:
+    await state.set_state(NavigationFSM.teacher_menu)
     async with SessionLocal() as db:
         service = TimetableService(db)
         user = await service.get_user(message.from_user.id)
@@ -344,6 +350,7 @@ async def recent_searches(message: Message, state: FSMContext) -> None:
 
 @router.callback_query(F.data.startswith("teacher_list_page:"))
 async def paginate_teacher_list_callback(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     try:
         page = int(callback.data.split(":", 1)[1])
     except Exception:
@@ -362,6 +369,7 @@ async def paginate_teacher_list_callback(callback: CallbackQuery, state: FSMCont
 
 @router.callback_query(F.data.startswith("teacher_pick:"))
 async def teacher_pick_callback(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     teacher_id = int(callback.data.split(":", 1)[1])
     async with SessionLocal() as db:
         service = TimetableService(db)
@@ -379,6 +387,7 @@ async def teacher_pick_callback(callback: CallbackQuery, state: FSMContext) -> N
 
 @router.callback_query(F.data.startswith("teacher_action:view:"))
 async def teacher_view_schedule(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     teacher_id = int(callback.data.split(":")[-1])
     async with SessionLocal() as db:
         service = TimetableService(db)
@@ -394,6 +403,7 @@ async def teacher_view_schedule(callback: CallbackQuery, state: FSMContext) -> N
 
 @router.callback_query(F.data.startswith("teacher_action:fav:"))
 async def teacher_toggle_favorite(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     teacher_id = int(callback.data.split(":")[-1])
     async with SessionLocal() as db:
         service = TimetableService(db)
@@ -412,6 +422,7 @@ async def teacher_toggle_favorite(callback: CallbackQuery, state: FSMContext) ->
 
 @router.callback_query(F.data.startswith("teacher_action:notif:"))
 async def teacher_toggle_notifications(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     teacher_id = int(callback.data.split(":")[-1])
     async with SessionLocal() as db:
         service = TimetableService(db)
@@ -430,6 +441,7 @@ async def teacher_toggle_notifications(callback: CallbackQuery, state: FSMContex
 
 @router.callback_query(F.data == "teacher_action:back")
 async def teacher_action_back(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     await state.clear()
     await callback.message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
     await callback.answer()
@@ -437,18 +449,19 @@ async def teacher_action_back(callback: CallbackQuery, state: FSMContext) -> Non
 
 @router.callback_query(F.data == "teacher_action:main")
 async def teacher_action_main(callback: CallbackQuery, state: FSMContext) -> None:
+    logger.info("callback=%s user=%s", callback.data, callback.from_user.id)
     await state.clear()
     await callback.message.answer("Main Menu", reply_markup=main_menu_keyboard())
     await callback.answer()
 
 
-@router.message(F.text == BACK_TEXT)
+@router.message(NavigationFSM.teacher_menu, F.text == BACK_TEXT)
 async def back_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer("Teacher Timetable Menu", reply_markup=teacher_menu_keyboard())
 
 
-@router.message(F.text == MAIN_MENU_TEXT)
+@router.message(NavigationFSM.teacher_menu, F.text == MAIN_MENU_TEXT)
 async def main_menu_handler(message: Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer("Main Menu", reply_markup=main_menu_keyboard())
