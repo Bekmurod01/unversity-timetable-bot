@@ -10,7 +10,7 @@ from app.services.timetable_service import TimetableService
 router = Router()
 
 
-@router.message(F.text.in_({"?? Notifications", "?? Enable Notifications"}))
+@router.message(F.text.regexp(r"(Notifications|Enable Notifications)$"))
 async def notifications_menu(message: Message) -> None:
     async with SessionLocal() as db:
         service = TimetableService(db)
