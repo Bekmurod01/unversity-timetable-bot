@@ -54,6 +54,13 @@ class TimetableService:
     async def get_user(self, telegram_id: int) -> User | None:
         return (await self.db.execute(select(User).where(User.telegram_id == telegram_id))).scalar_one_or_none()
 
+    async def set_lesson_reminder_settings(self, user: User, enabled: bool, minutes: int) -> User:
+        user.lesson_reminder_enabled = enabled
+        user.lesson_reminder_minutes = minutes
+        await self.db.commit()
+        await self.db.refresh(user)
+        return user
+
     async def get_timetable(self, group_name: str, day: str | None = None) -> list[TimetableLesson]:
         query = select(TimetableLesson).where(TimetableLesson.group_name == group_name)
         if day:

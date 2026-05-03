@@ -22,3 +22,4 @@ class SettingsFSM(StatesGroup):
     waiting_group = State()
     waiting_faculty = State()
     waiting_year = State()
+    waiting_reminder_minutes = State()

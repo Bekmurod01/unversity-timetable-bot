@@ -100,6 +100,23 @@ def notification_keyboard() -> ReplyKeyboardMarkup:
     )
 
 
+def reminder_settings_inline_keyboard(selected_minutes: int | None = None) -> InlineKeyboardMarkup:
+    options = [5, 10, 15, 30, 60]
+    rows = [[
+        InlineKeyboardButton(
+            text=f"{'✅ ' if selected_minutes == x else ''}{'1 Hour Before' if x == 60 else f'{x} Minutes Before'}",
+            callback_data=f"reminder:set:{x}",
+        )
+    ] for x in options]
+    rows.append([InlineKeyboardButton(text="✏️ Custom Reminder", callback_data="reminder:custom")])
+    rows.append([InlineKeyboardButton(text="🔕 Disable Notifications", callback_data="reminder:disable")])
+    rows.append([
+        InlineKeyboardButton(text="⬅️ Back", callback_data="reminder:back"),
+        InlineKeyboardButton(text="🏠 Main Menu", callback_data="reminder:home"),
+    ])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
 def settings_keyboard() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[

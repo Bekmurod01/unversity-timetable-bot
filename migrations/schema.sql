@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
     year INTEGER NOT NULL,
     language VARCHAR(8) NOT NULL DEFAULT 'en',
     notifications_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    lesson_reminder_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    lesson_reminder_minutes INTEGER NOT NULL DEFAULT 5,
     notify_changes_only BOOLEAN NOT NULL DEFAULT FALSE,
     notify_daily_reminders BOOLEAN NOT NULL DEFAULT TRUE,
     notify_exam_alerts BOOLEAN NOT NULL DEFAULT TRUE,
@@ -51,6 +53,17 @@ CREATE TABLE IF NOT EXISTS updates_log (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS lesson_reminder_dispatches (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    group_name VARCHAR(40) NOT NULL,
+    day DATE NOT NULL,
+    start_time TIME NOT NULL,
+    reminder_minutes INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_reminder_dispatch UNIQUE (user_id, group_name, day, start_time, reminder_minutes)
+);
+
 CREATE TABLE IF NOT EXISTS favorite_teachers (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -64,3 +77,4 @@ CREATE INDEX IF NOT EXISTS idx_timetable_group_day ON timetable_lessons(group_na
 CREATE INDEX IF NOT EXISTS idx_timetable_teacher ON timetable_lessons(teacher);
 CREATE INDEX IF NOT EXISTS idx_timetable_room ON timetable_lessons(room);
 CREATE INDEX IF NOT EXISTS idx_updates_group_time ON updates_log(group_name, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_lesson_reminder_dispatch_user ON lesson_reminder_dispatches(user_id);

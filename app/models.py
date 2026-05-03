@@ -17,6 +17,8 @@ class User(Base):
     year: Mapped[int] = mapped_column(Integer, index=True)
     language: Mapped[str] = mapped_column(String(8), default="en")
     notifications_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    lesson_reminder_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    lesson_reminder_minutes: Mapped[int] = mapped_column(Integer, default=5)
     notify_changes_only: Mapped[bool] = mapped_column(Boolean, default=False)
     notify_daily_reminders: Mapped[bool] = mapped_column(Boolean, default=True)
     notify_exam_alerts: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -70,6 +72,21 @@ class UpdateLog(Base):
     group_name: Mapped[str] = mapped_column(String(40), index=True)
     change_type: Mapped[str] = mapped_column(String(40))
     details: Mapped[str] = mapped_column(String(500))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+
+
+class LessonReminderDispatch(Base):
+    __tablename__ = "lesson_reminder_dispatches"
+    __table_args__ = (
+        UniqueConstraint("user_id", "group_name", "day", "start_time", "reminder_minutes", name="uq_reminder_dispatch"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    group_name: Mapped[str] = mapped_column(String(40), index=True)
+    day: Mapped[Date] = mapped_column(Date, index=True)
+    start_time: Mapped[time] = mapped_column(Time)
+    reminder_minutes: Mapped[int] = mapped_column(Integer)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
 
 
