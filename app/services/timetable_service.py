@@ -108,19 +108,26 @@ class TimetableService:
 
     async def replace_timetable(self, lessons: list[dict]) -> None:
         await self.db.execute(delete(TimetableLesson))
+        skipped_rows = 0
         for row in lessons:
-            lesson = TimetableLesson(
-                group_name=row["group_name"],
-                subject=row["subject"],
-                teacher=row["teacher"],
-                room=row["room"],
-                day=row["day"].lower(),
-                start_time=_parse_time(row["start_time"]),
-                end_time=_parse_time(row["end_time"]),
-                status=row.get("status", "active"),
-            )
-            self.db.add(lesson)
+            try:
+                lesson = TimetableLesson(
+                    group_name=row["group_name"],
+                    subject=row["subject"],
+                    teacher=row["teacher"],
+                    room=row["room"],
+                    day=row["day"].lower(),
+                    start_time=_parse_time(row["start_time"]),
+                    end_time=_parse_time(row["end_time"]),
+                    status=row.get("status", "active"),
+                )
+                self.db.add(lesson)
+            except Exception:
+                skipped_rows += 1
+                logger.exception("Skipping invalid timetable lesson row: %s", row)
         await self.db.commit()
+        if skipped_rows:
+            logger.warning("replace_timetable skipped %s invalid lesson rows", skipped_rows)
         await self.sync_teachers()
 
     async def sync_teachers(self) -> None:
@@ -147,19 +154,26 @@ class TimetableService:
 
         for name, subjects in teacher_subjects.items():
             subject_str = ", ".join(sorted(subjects))
+            if len(subject_str) > 120:
+                logger.warning("Teacher subject string exceeded legacy limit: teacher=%s length=%s", name, len(subject_str))
             faculty_votes = teacher_faculty_counts.get(name, {})
             inferred_faculty = max(faculty_votes, key=faculty_votes.get) if faculty_votes else None
 
-            # Try to find existing teacher
-            stmt = select(Teacher).where(Teacher.name == name)
-            teacher = (await self.db.execute(stmt)).scalar_one_or_none()
-            if teacher:
-                teacher.subject = subject_str
-                if inferred_faculty:
-                    teacher.faculty = inferred_faculty
-            else:
-                teacher = Teacher(name=name, subject=subject_str, faculty=inferred_faculty)
-                self.db.add(teacher)
+            try:
+                # Savepoint isolates a single teacher write failure and keeps overall sync progressing.
+                async with self.db.begin_nested():
+                    stmt = select(Teacher).where(Teacher.name == name)
+                    teacher = (await self.db.execute(stmt)).scalar_one_or_none()
+                    if teacher:
+                        teacher.subject = subject_str
+                        if inferred_faculty:
+                            teacher.faculty = inferred_faculty
+                    else:
+                        teacher = Teacher(name=name, subject=subject_str, faculty=inferred_faculty)
+                        self.db.add(teacher)
+                    await self.db.flush()
+            except Exception:
+                logger.exception("Failed syncing teacher record and continued: teacher=%s", name)
         await self.db.commit()
 
     async def get_teacher_by_name(self, name: str) -> Teacher | None:

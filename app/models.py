@@ -1,6 +1,6 @@
 from datetime import datetime, time
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String, Time, UniqueConstraint, func
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String, Text, Time, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -32,7 +32,7 @@ class Teacher(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(120), index=True, unique=True)
-    subject: Mapped[str] = mapped_column(String(120), nullable=True)
+    subject: Mapped[str] = mapped_column(Text, nullable=True)
     faculty: Mapped[str] = mapped_column(String(120), nullable=True)
     last_synced: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
