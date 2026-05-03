@@ -12,6 +12,10 @@ if not database_url:
     # Keep service bootable when DATABASE_URL is not set (e.g., fresh Render web service).
     # Web process can still bind PORT and serve /health while DB is configured.
     database_url = "sqlite+aiosqlite:///./university_bot.db"
+elif database_url.startswith("postgres://"):
+    database_url = "postgresql+psycopg://" + database_url[len("postgres://") :]
+elif database_url.startswith("postgresql://") and "+psycopg" not in database_url:
+    database_url = "postgresql+psycopg://" + database_url[len("postgresql://") :]
 engine = create_async_engine(database_url, pool_pre_ping=True)
 SessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
