@@ -66,10 +66,20 @@ async def run_bot() -> None:
     dp.include_router(teachers.router)
     dp.include_router(admin.router)
 
+    me = await bot.get_me()
+    logging.info("Bot authorized successfully: @%s (id=%s)", me.username, me.id)
+
     # Ensure polling works even if webhook had been set previously.
     await bot.delete_webhook(drop_pending_updates=False)
     logging.info("Webhook cleared. Starting bot polling.")
-    await dp.start_polling(bot, drop_pending_updates=True)
+
+    while True:
+        try:
+            await dp.start_polling(bot, drop_pending_updates=True)
+            break
+        except Exception:
+            logging.exception("Polling crashed. Restarting in 5 seconds.")
+            await asyncio.sleep(5)
 
 
 if __name__ == "__main__":

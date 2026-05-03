@@ -1,6 +1,6 @@
 ﻿import logging
 from aiogram import F, Router
-from aiogram.filters import CommandStart
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
@@ -23,7 +23,10 @@ async def _ask_year_step(message: Message, state: FSMContext, group_name: str) -
 
 @router.message(CommandStart())
 async def start_command(message: Message, state: FSMContext) -> None:
-    await state.clear()
+    try:
+        await state.clear()
+    except Exception:
+        logging.exception("Failed to clear FSM state during /start for user=%s", message.from_user.id if message.from_user else None)
     try:
         async with SessionLocal() as db:
             service = TimetableService(db)
@@ -49,6 +52,11 @@ async def start_command(message: Message, state: FSMContext) -> None:
 
     await state.set_state(RegistrationFSM.full_name)
     await message.answer("👋 Hello! Let's register your profile.\n\n👤 Enter your full name:")
+
+
+@router.message(Command("ping"))
+async def ping_command(message: Message) -> None:
+    await message.answer("pong")
 
 
 @router.message(RegistrationFSM.full_name)
