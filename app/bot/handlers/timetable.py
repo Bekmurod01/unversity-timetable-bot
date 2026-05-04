@@ -13,6 +13,7 @@ from app.services.date_utils import (
     day_name_to_next_date,
     format_date_with_day,
     group_lessons_by_date,
+    sort_lessons_by_date,
     get_current_date,
 )
 
@@ -47,19 +48,28 @@ def _format_lessons(title: str, lessons: list, show_group: bool = False, group_b
     rows = [title]
     
     if not group_by_date:
-        # Original simple format (for custom day selection)
-        for lesson in lessons:
+        # Simple format for single day (preserve chronological order)
+        sorted_lessons = sort_lessons_by_date(lessons)
+        for lesson in sorted_lessons:
             rows.append(f"{_format_lesson_time(lesson)} | {_format_lesson_details(lesson, show_group)}")
         return "\n".join(rows)
     
-    # New grouped format with dates
-    grouped = group_lessons_by_date(lessons, use_next_date=True)
+    # Grouped format by date (ensures chronological order)
+    sorted_lessons = sort_lessons_by_date(lessons)
+    grouped = {}
+    
+    # Group already-sorted lessons to maintain order
+    for lesson in sorted_lessons:
+        date_key = lesson.date_obj
+        if date_key not in grouped:
+            grouped[date_key] = []
+        grouped[date_key].append(lesson)
     
     for date, date_lessons in grouped.items():
         rows.append("")  # Blank line for readability
         rows.append(format_date_with_day(date))
         
-        for lesson in sorted(date_lessons, key=lambda x: x.start_time):
+        for lesson in date_lessons:  # Already sorted by start_time within group_lessons_by_date
             rows.append(f"  {_format_lesson_time(lesson)}")
             rows.append(f"  {_format_lesson_details(lesson, show_group)}")
     

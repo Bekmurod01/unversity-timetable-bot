@@ -62,6 +62,8 @@ def group_lessons_by_date(lessons: list, use_next_date: bool = True) -> dict[dat
     """
     Group TimetableLesson objects by their actual date.
     
+    Attaches a `date_obj` attribute to each lesson for sorting and display.
+    
     Args:
         lessons: List of TimetableLesson objects with 'day' attribute
         use_next_date: If True, calculate next occurrence of weekday.
@@ -69,21 +71,43 @@ def group_lessons_by_date(lessons: list, use_next_date: bool = True) -> dict[dat
     
     Returns:
         Dictionary with datetime keys and lesson lists as values,
-        sorted by date.
+        sorted chronologically by date (earliest to latest).
     """
     grouped = {}
     
     for lesson in lessons:
-        # Convert day name to date
+        # Convert day name to date and attach to lesson object
         if use_next_date:
             lesson_date = day_name_to_next_date(lesson.day)
         else:
-            # For weekly view, calculate next week starting from next occurrence
             lesson_date = day_name_to_next_date(lesson.day)
+        
+        # Attach date_obj to lesson for later reference
+        lesson.date_obj = lesson_date
         
         if lesson_date not in grouped:
             grouped[lesson_date] = []
         grouped[lesson_date].append(lesson)
     
-    # Sort by date and return as dict (preserves order in Python 3.7+)
+    # Sort by date (chronologically: earliest to latest)
     return dict(sorted(grouped.items()))
+
+
+def sort_lessons_by_date(lessons: list) -> list:
+    """
+    Sort lessons chronologically by their computed date.
+    
+    Attaches `date_obj` to each lesson and returns sorted list.
+    
+    Args:
+        lessons: List of TimetableLesson objects with 'day' attribute
+    
+    Returns:
+        List of lessons sorted chronologically by date (earliest to latest)
+    """
+    # Attach date_obj to each lesson
+    for lesson in lessons:
+        lesson.date_obj = day_name_to_next_date(lesson.day)
+    
+    # Sort by date, then by start_time
+    return sorted(lessons, key=lambda x: (x.date_obj, x.start_time))
