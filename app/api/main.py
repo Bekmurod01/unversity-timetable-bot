@@ -156,8 +156,17 @@ async def telegram_webhook(request: Request) -> dict:
         logger.exception("Invalid Telegram webhook payload")
         raise HTTPException(status_code=400, detail="Invalid payload")
 
-    logger.info("Webhook update received: update_id=%s", getattr(update, "update_id", None))
-    await app.state.dp.feed_update(app.state.bot, update)
+    message_text = update.message.text if getattr(update, "message", None) else None
+    logger.info(
+        "Webhook update received: update_id=%s message_text=%r",
+        getattr(update, "update_id", None),
+        message_text,
+    )
+    try:
+        await app.state.dp.feed_update(app.state.bot, update)
+    except Exception:
+        logger.exception("Failed to process webhook update: update_id=%s", getattr(update, "update_id", None))
+        raise HTTPException(status_code=500, detail="Failed to process update")
     return {"ok": True}
 
 

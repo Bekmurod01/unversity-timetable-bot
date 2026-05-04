@@ -23,35 +23,51 @@ async def _ask_year_step(message: Message, state: FSMContext, group_name: str) -
 
 @router.message(CommandStart())
 async def start_command(message: Message, state: FSMContext) -> None:
+    logging.info(
+        "/start handler triggered: user_id=%s chat_id=%s text=%r",
+        message.from_user.id if message.from_user else None,
+        message.chat.id if message.chat else None,
+        message.text,
+    )
     try:
         await state.clear()
     except Exception:
         logging.exception("Failed to clear FSM state during /start for user=%s", message.from_user.id if message.from_user else None)
     try:
-        async with SessionLocal() as db:
-            service = TimetableService(db)
-            user = await service.get_user(message.from_user.id)
+        try:
+            async with SessionLocal() as db:
+                service = TimetableService(db)
+                user = await service.get_user(message.from_user.id)
+        except Exception:
+            logging.exception("Failed to load user during /start for user=%s", message.from_user.id)
+            await message.answer(
+                "⚠️ Temporary server issue. Please try again in a moment."
+            )
+            return
+
+        if user:
+            await message.answer(
+                f"👋 Welcome back, {user.full_name}!\n\n"
+                f"Current profile:\n"
+                f"🏢 Faculty: {user.faculty}\n"
+                f"🎓 Year: {user.year}\n"
+                f"👥 Group: {user.group_name}\n\n"
+                "You can update your profile in the ⚙️ Settings menu.",
+                reply_markup=main_menu_keyboard(),
+            )
+            return
+
+        await state.set_state(RegistrationFSM.full_name)
+        await message.answer("👋 Hello! Let's register your profile.\n\n👤 Enter your full name:")
     except Exception:
-        logging.exception("Failed to load user during /start for user=%s", message.from_user.id)
-        await message.answer(
-            "⚠️ Temporary server issue. Please try again in a moment."
-        )
-        return
+        logging.exception("Unexpected error inside /start handler for user=%s", message.from_user.id if message.from_user else None)
+        await message.answer("⚠️ Something went wrong while processing /start. Please try again.")
 
-    if user:
-        await message.answer(
-            f"👋 Welcome back, {user.full_name}!\n\n"
-            f"Current profile:\n"
-            f"🏢 Faculty: {user.faculty}\n"
-            f"🎓 Year: {user.year}\n"
-            f"👥 Group: {user.group_name}\n\n"
-            "You can update your profile in the ⚙️ Settings menu.",
-            reply_markup=main_menu_keyboard(),
-        )
-        return
 
-    await state.set_state(RegistrationFSM.full_name)
-    await message.answer("👋 Hello! Let's register your profile.\n\n👤 Enter your full name:")
+@router.message(F.text == "/start")
+async def start_text_fallback(message: Message, state: FSMContext) -> None:
+    logging.info("Raw text /start fallback triggered for user=%s", message.from_user.id if message.from_user else None)
+    await start_command(message, state)
 
 
 @router.message(Command("ping"))
