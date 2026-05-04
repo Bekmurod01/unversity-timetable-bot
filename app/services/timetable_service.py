@@ -164,12 +164,10 @@ class TimetableService:
         failed_teacher_records = 0
         for name, subjects in teacher_subjects.items():
             subject_str = ", ".join(sorted(subjects))
-            if len(subject_str) > 120:
-                logger.warning(
-                    "Teacher subject string exceeds legacy VARCHAR(120): teacher=%s length=%s",
-                    name,
-                    len(subject_str),
-                )
+            # Truncate subject string to 300 chars to prevent excessive data storage
+            if len(subject_str) > 300:
+                subject_str = subject_str[:297] + "..."
+            
             faculty_votes = teacher_faculty_counts.get(name, {})
             inferred_faculty = max(faculty_votes, key=faculty_votes.get) if faculty_votes else None
 
