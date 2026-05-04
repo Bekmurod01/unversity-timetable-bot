@@ -25,9 +25,38 @@ def _canonical_group(value: str) -> str:
     return re.sub(r"-\d{2}$", "", _normalize_group(value))
 
 
+def _lesson_display_key(lesson: TimetableLesson) -> tuple[str, str, str, str, str]:
+    return (
+        (lesson.day or "").strip().lower(),
+        lesson.start_time.strftime("%H:%M") if lesson.start_time else "",
+        (lesson.subject or "").strip().casefold(),
+        (lesson.room or "").strip().casefold(),
+        (lesson.teacher or "").strip().casefold(),
+    )
+
+
+def _lesson_sort_key(lesson: TimetableLesson) -> tuple[int, str, str, str, str]:
+    day_idx = WEEK_DAYS.index((lesson.day or "").strip().lower()) if (lesson.day or "").strip().lower() in WEEK_DAYS else 99
+    return (
+        day_idx,
+        lesson.start_time.strftime("%H:%M") if lesson.start_time else "",
+        (lesson.subject or "").strip().casefold(),
+        (lesson.room or "").strip().casefold(),
+        (lesson.teacher or "").strip().casefold(),
+    )
+
+
 class TimetableService:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
+
+    def _deduplicate_and_sort_lessons(self, lessons: list[TimetableLesson]) -> list[TimetableLesson]:
+        unique: dict[tuple[str, str, str, str, str], TimetableLesson] = {}
+        for lesson in lessons:
+            key = _lesson_display_key(lesson)
+            if key not in unique:
+                unique[key] = lesson
+        return sorted(unique.values(), key=_lesson_sort_key)
 
     async def upsert_user(self, telegram_id: int, full_name: str, faculty: str, group_name: str, year: int) -> User:
         query: Select[tuple[User]] = select(User).where(User.telegram_id == telegram_id)
@@ -63,12 +92,15 @@ class TimetableService:
         await self.db.refresh(user)
         return user
 
-    async def get_timetable(self, group_name: str, day: str | None = None) -> list[TimetableLesson]:
-        query = select(TimetableLesson).where(TimetableLesson.group_name == group_name)
+    async def get_timetable(self, group_name: str | None, day: str | None = None) -> list[TimetableLesson]:
+        query = select(TimetableLesson)
+        if group_name:
+            query = query.where(TimetableLesson.group_name == group_name)
         if day:
             query = query.where(TimetableLesson.day == day.lower())
-        query = query.order_by(TimetableLesson.day, TimetableLesson.start_time)
-        return list((await self.db.execute(query)).scalars().all())
+        query = query.order_by(TimetableLesson.day, TimetableLesson.start_time, TimetableLesson.subject, TimetableLesson.room, TimetableLesson.teacher)
+        lessons = list((await self.db.execute(query)).scalars().all())
+        return self._deduplicate_and_sort_lessons(lessons)
 
     async def get_timetable_for_user(self, user: User, day: str | None = None) -> list[TimetableLesson]:
         raw_group = _normalize_group(user.group_name)
@@ -92,7 +124,7 @@ class TimetableService:
             query = query.order_by(TimetableLesson.group_name, TimetableLesson.day, TimetableLesson.start_time)
             prefixed = list((await self.db.execute(query)).scalars().all())
             if prefixed:
-                return prefixed
+                return self._deduplicate_and_sort_lessons(prefixed)
 
         # 3) Fallback: faculty + year pattern (e.g. IT-2xx).
         faculty = (user.faculty or "").strip().upper()
@@ -104,7 +136,8 @@ class TimetableService:
         if day:
             query = query.where(TimetableLesson.day == day.lower())
         query = query.order_by(TimetableLesson.group_name, TimetableLesson.day, TimetableLesson.start_time)
-        return list((await self.db.execute(query)).scalars().all())
+        lessons = list((await self.db.execute(query)).scalars().all())
+        return self._deduplicate_and_sort_lessons(lessons)
 
     async def replace_timetable(self, lessons: list[dict]) -> None:
         """Replace all timetable lessons with new data, handling duplicates safely."""
@@ -397,7 +430,7 @@ class TimetableService:
         stmt = stmt.order_by(TimetableLesson.day, TimetableLesson.start_time, TimetableLesson.group_name)
         lessons = list((await self.db.execute(stmt)).scalars().all())
         if lessons:
-            return lessons
+            return self._deduplicate_and_sort_lessons(lessons)
 
         # Fallback to partial match.
         stmt = select(TimetableLesson).where(TimetableLesson.teacher.ilike(f"%{teacher_query}%"))
@@ -406,7 +439,7 @@ class TimetableService:
         stmt = stmt.order_by(TimetableLesson.teacher, TimetableLesson.day, TimetableLesson.start_time, TimetableLesson.group_name)
         lessons = list((await self.db.execute(stmt)).scalars().all())
         if lessons:
-            return lessons
+            return self._deduplicate_and_sort_lessons(lessons)
 
         # Last fallback: token-based contains matching regardless of name word order.
         tokens = [x for x in teacher_query.split() if x]
@@ -417,7 +450,8 @@ class TimetableService:
         if day:
             stmt = stmt.where(TimetableLesson.day == day.lower())
         stmt = stmt.order_by(TimetableLesson.teacher, TimetableLesson.day, TimetableLesson.start_time, TimetableLesson.group_name)
-        return list((await self.db.execute(stmt)).scalars().all())
+        lessons = list((await self.db.execute(stmt)).scalars().all())
+        return self._deduplicate_and_sort_lessons(lessons)
 
     async def toggle_favorite_teacher(self, user_id: int, teacher_id: int) -> bool:
         """Returns True if added, False if removed."""
