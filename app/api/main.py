@@ -21,23 +21,31 @@ ADMIN_ROUTER_LOADED = False
 
 
 async def sync_timetable_once() -> None:
-    adapter = EduPageAdapter()
-    lessons = await adapter.fetch_timetable_snapshot()
-    if not lessons:
-        logger.warning("Timetable sync: no lessons loaded from EduPage/local snapshot")
-        return
+    """Sync timetable from EduPage with safe error handling."""
+    try:
+        adapter = EduPageAdapter()
+        lessons = await adapter.fetch_timetable_snapshot()
+        if not lessons:
+            logger.warning("Timetable sync: no lessons loaded from EduPage/local snapshot")
+            return
 
-    async with SessionLocal() as db:
-        service = TimetableService(db)
-        await service.replace_timetable(lessons)
-        faculties = await service.get_available_faculties()
-        teacher_faculties = await service.get_teacher_faculties()
-        logger.info(
-            "Timetable sync complete: lessons=%s faculties=%s teacher_faculties=%s",
-            len(lessons),
-            len(faculties),
-            len(teacher_faculties),
-        )
+        async with SessionLocal() as db:
+            service = TimetableService(db)
+            try:
+                await service.replace_timetable(lessons)
+                faculties = await service.get_available_faculties()
+                teacher_faculties = await service.get_teacher_faculties()
+                logger.info(
+                    "Timetable sync complete: input_lessons=%s faculties=%s teacher_faculties=%s",
+                    len(lessons),
+                    len(faculties),
+                    len(teacher_faculties),
+                )
+            except Exception as db_error:
+                logger.exception("Timetable sync database operation failed: %s", str(db_error))
+                raise
+    except Exception:
+        logger.exception("Timetable sync failed - will retry on next interval")
 
 
 async def periodic_timetable_sync(stop_event: asyncio.Event) -> None:

@@ -107,28 +107,97 @@ class TimetableService:
         return list((await self.db.execute(query)).scalars().all())
 
     async def replace_timetable(self, lessons: list[dict]) -> None:
-        await self.db.execute(delete(TimetableLesson))
-        skipped_rows = 0
-        for row in lessons:
-            try:
-                lesson = TimetableLesson(
-                    group_name=row["group_name"],
-                    subject=row["subject"],
-                    teacher=row["teacher"],
-                    room=row["room"],
-                    day=row["day"].lower(),
-                    start_time=_parse_time(row["start_time"]),
-                    end_time=_parse_time(row["end_time"]),
-                    status=row.get("status", "active"),
+        """Replace all timetable lessons with new data, handling duplicates safely."""
+        try:
+            # Get count of existing lessons before deletion
+            stmt_count = select(func.count(TimetableLesson.id))
+            existing_count = (await self.db.execute(stmt_count)).scalar() or 0
+            logger.info("replace_timetable: existing_lessons=%s incoming_rows=%s", existing_count, len(lessons))
+            
+            # Delete all existing lessons
+            await self.db.execute(delete(TimetableLesson))
+            logger.info("replace_timetable: deleted all existing lessons")
+            
+            # Deduplicate input lessons based on unique constraint columns
+            # The unique constraint is on (group_name, day, start_time, subject)
+            seen = set()
+            deduplicated_lessons = []
+            duplicate_count = 0
+            skipped_rows = 0
+            inserted_rows = 0
+            
+            for row in lessons:
+                try:
+                    # Normalize and create a unique key for deduplication
+                    group_name = row.get("group_name", "").strip().upper()
+                    day = row.get("day", "").strip().lower()
+                    start_time_str = row.get("start_time", "").strip()
+                    subject = row.get("subject", "").strip()
+                    
+                    unique_key = (group_name, day, start_time_str, subject)
+                    
+                    # Check if we've already seen this lesson
+                    if unique_key in seen:
+                        duplicate_count += 1
+                        logger.debug(
+                            "replace_timetable: skipping duplicate lesson group=%s day=%s start=%s subject=%s",
+                            group_name, day, start_time_str, subject
+                        )
+                        continue
+                    
+                    seen.add(unique_key)
+                    
+                    # Parse and create lesson object
+                    lesson = TimetableLesson(
+                        group_name=group_name,
+                        subject=subject,
+                        teacher=row.get("teacher", "").strip(),
+                        room=row.get("room", "").strip(),
+                        day=day,
+                        start_time=_parse_time(start_time_str),
+                        end_time=_parse_time(row.get("end_time", "").strip()),
+                        status=row.get("status", "active"),
+                    )
+                    deduplicated_lessons.append(lesson)
+                    inserted_rows += 1
+                    
+                except Exception:
+                    skipped_rows += 1
+                    logger.exception("replace_timetable: skipping invalid lesson row: %s", row)
+            
+            # Bulk add deduplicated lessons
+            if deduplicated_lessons:
+                self.db.add_all(deduplicated_lessons)
+                logger.info(
+                    "replace_timetable: added %s lessons (skipped %s invalid, %s duplicates)",
+                    len(deduplicated_lessons),
+                    skipped_rows,
+                    duplicate_count
                 )
-                self.db.add(lesson)
-            except Exception:
-                skipped_rows += 1
-                logger.exception("Skipping invalid timetable lesson row: %s", row)
-        await self.db.commit()
-        if skipped_rows:
-            logger.warning("replace_timetable skipped %s invalid lesson rows", skipped_rows)
-        await self.sync_teachers()
+            else:
+                logger.warning(
+                    "replace_timetable: no valid lessons to insert after deduplication (invalid=%s, dupes=%s)",
+                    skipped_rows,
+                    duplicate_count
+                )
+            
+            # Commit in a transaction
+            await self.db.commit()
+            logger.info(
+                "replace_timetable: sync complete - deleted_count=%s inserted_count=%s skipped_invalid=%s duplicate_count=%s",
+                existing_count,
+                inserted_rows,
+                skipped_rows,
+                duplicate_count
+            )
+            
+            # Sync teachers after successful timetable replacement
+            await self.sync_teachers()
+            
+        except Exception as e:
+            await self.db.rollback()
+            logger.exception("replace_timetable: FAILED - rolling back changes. error=%s", str(e))
+            raise
 
     async def sync_teachers(self) -> None:
         # Extract teacher->subjects and teacher->faculty candidates from timetable rows.
