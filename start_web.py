@@ -24,12 +24,7 @@ def run_fallback_server(port: int, error_text: str) -> None:
 
 
 def main() -> None:
-    port_raw = os.getenv("PORT", "10000")
-    try:
-        port = int(port_raw)
-    except ValueError:
-        print(f"Invalid PORT='{port_raw}', defaulting to 10000")
-        port = 10000
+    port = int(os.environ.get("PORT", 10000))
 
     print(f"Starting web service on 0.0.0.0:{port}")
     try:

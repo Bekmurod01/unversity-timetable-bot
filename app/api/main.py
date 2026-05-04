@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -177,3 +178,10 @@ try:
     ADMIN_ROUTER_LOADED = True
 except Exception:
     logger.exception("Failed to load admin router during startup")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run("app.api.main:app", host="0.0.0.0", port=port)
