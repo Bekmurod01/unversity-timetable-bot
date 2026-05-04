@@ -1,4 +1,4 @@
-from . import admin, exams, notifications, room_finder, settings, start, teachers, timetable
+from . import admin, debug, exams, notifications, room_finder, settings, start, teachers, timetable
 
 __all__ = [
     "start",
@@ -9,4 +9,5 @@ __all__ = [
     "room_finder",
     "settings",
     "admin",
+    "debug",
 ]

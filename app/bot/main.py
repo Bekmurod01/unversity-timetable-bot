@@ -4,7 +4,7 @@ from typing import Any
 from aiogram import BaseMiddleware, Bot, Dispatcher
 from aiogram.types import ErrorEvent
 
-from app.bot.handlers import admin, exams, notifications, room_finder, settings, start, teachers, timetable
+from app.bot.handlers import admin, debug, exams, notifications, room_finder, settings, start, teachers, timetable
 from app.config import Settings, get_settings
 
 
@@ -73,7 +73,18 @@ async def create_bot_and_dispatcher() -> tuple[Bot, Dispatcher]:
 
     @dp.error()
     async def on_error(event: ErrorEvent) -> None:
-        logging.exception("Unhandled update error: %s", event.exception)
+        update_id = getattr(event.update, "update_id", None)
+        update_dump = None
+        try:
+            update_dump = event.update.model_dump(exclude_none=True) if event.update else None
+        except Exception:
+            update_dump = "<failed to serialize update>"
+        logging.exception(
+            "Unhandled update error: update_id=%s exception=%s update=%s",
+            update_id,
+            event.exception,
+            update_dump,
+        )
 
     dp.include_router(start.router)
     dp.include_router(timetable.router)
@@ -83,6 +94,8 @@ async def create_bot_and_dispatcher() -> tuple[Bot, Dispatcher]:
     dp.include_router(settings.router)
     dp.include_router(teachers.router)
     dp.include_router(admin.router)
+    # Keep debug fallback last so it does not shadow specific handlers.
+    dp.include_router(debug.router)
 
     bot = Bot(token=settings_obj.bot_token)
     return bot, dp

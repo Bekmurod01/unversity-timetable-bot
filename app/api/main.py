@@ -152,6 +152,7 @@ async def telegram_webhook(request: Request) -> dict:
 
     try:
         payload = await request.json()
+        logger.info("Raw webhook payload: %s", payload)
         update = Update.model_validate(payload)
     except Exception:
         logger.exception("Invalid Telegram webhook payload")
@@ -164,9 +165,11 @@ async def telegram_webhook(request: Request) -> dict:
         message_text,
     )
     try:
+        logger.info("Dispatching update to aiogram: update_id=%s", getattr(update, "update_id", None))
         await app.state.dp.feed_update(app.state.bot, update)
+        logger.info("Update processed successfully: update_id=%s", getattr(update, "update_id", None))
     except Exception:
-        logger.exception("Failed to process webhook update: update_id=%s", getattr(update, "update_id", None))
+        logger.exception("Failed to process webhook update: update_id=%s payload=%s", getattr(update, "update_id", None), payload)
         raise HTTPException(status_code=500, detail="Failed to process update")
     return {"ok": True}
 
