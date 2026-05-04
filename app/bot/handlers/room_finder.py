@@ -1,11 +1,12 @@
 ﻿from datetime import datetime
 import logging
+import re
 
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from app.bot.keyboards import main_menu_keyboard, timetable_mode_keyboard
+from app.bot.keyboards import main_menu_keyboard
 from app.bot.states import RoomFinderFSM
 from app.db import SessionLocal
 from app.services.timetable_service import TimetableService
@@ -13,14 +14,21 @@ from app.services.timetable_service import TimetableService
 router = Router()
 
 
+def _room_block(room_name: str) -> str:
+    match = re.search(r"\(([A-Z]\d+)\)", room_name or "")
+    if match:
+        return match.group(1)[0]
+    return "Other"
+
+
 def room_finder_main_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="📅 Today's Empty Rooms", callback_data="room_today")],
-            [InlineKeyboardButton(text="📆 Weekly Empty Rooms", callback_data="room_week")],
+            [InlineKeyboardButton(text="Today's Empty Rooms", callback_data="room_today")],
+            [InlineKeyboardButton(text="Weekly Empty Rooms", callback_data="room_week")],
             [
-                InlineKeyboardButton(text="⬅️ Back", callback_data="room_back"),
-                InlineKeyboardButton(text="🏠 Main Menu", callback_data="room_home"),
+                InlineKeyboardButton(text="Back", callback_data="room_back"),
+                InlineKeyboardButton(text="Main Menu", callback_data="room_home"),
             ],
         ]
     )
@@ -29,7 +37,7 @@ def room_finder_main_keyboard() -> InlineKeyboardMarkup:
 @router.message(F.text.func(lambda t: bool(t) and "Room Finder" in t))
 async def room_finder_prompt(message: Message, state: FSMContext) -> None:
     await state.clear()
-    await message.answer("🏫 Room Finder\nChoose an option:", reply_markup=room_finder_main_keyboard())
+    await message.answer("Room Finder\nChoose an option:", reply_markup=room_finder_main_keyboard())
 
 
 @router.callback_query(F.data == "room_back")
@@ -67,16 +75,16 @@ async def room_today(callback: CallbackQuery, state: FSMContext):
         available = all_rooms - occupied
         blocks = {}
         for room in available:
-            block = room[0].upper() if room and room[0].isalpha() else "Other"
+            block = _room_block(room)
             blocks.setdefault(block, []).append(room)
         if not available:
             text = "No available rooms found for today."
         else:
-            text = "🏫 Today's Available Rooms\n"
+            text = "Today's Available Rooms\n"
             for block in sorted(blocks.keys()):
-                text += f"\n📍 {block} Block\n"
+                text += f"\n{block} Block\n"
                 for r in sorted(blocks[block]):
-                    text += f"• Room {r}\n"
+                    text += f"- Room {r}\n"
     await callback.message.edit_text(text, reply_markup=room_finder_main_keyboard())
     await callback.answer()
 
@@ -86,17 +94,18 @@ async def room_week(callback: CallbackQuery, state: FSMContext):
     logging.info("room_week clicked by user=%s", callback.from_user.id)
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     kb = InlineKeyboardMarkup(
-        inline_keyboard=[[InlineKeyboardButton(text=day, callback_data=f"room_week_day:{day}")] for day in days]
-        + [[InlineKeyboardButton(text="⬅️ Back", callback_data="room_back"), InlineKeyboardButton(text="🏠 Main Menu", callback_data="room_home")]]
+        inline_keyboard=[[InlineKeyboardButton(text=day, callback_data=f"room_day_{day.lower()}")] for day in days]
+        + [[InlineKeyboardButton(text="Back", callback_data="room_back"), InlineKeyboardButton(text="Main Menu", callback_data="room_home")]]
     )
     await callback.message.edit_text("Select day of week:", reply_markup=kb)
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("room_week_day:"))
+@router.callback_query(F.data.startswith("room_day_"))
 async def room_week_day(callback: CallbackQuery, state: FSMContext):
     logging.info("room_week_day callback data=%s user=%s", callback.data, callback.from_user.id)
-    day = callback.data.split(":", 1)[1].lower()
+    day = callback.data.removeprefix("room_day_")
+    await state.update_data(selected_day=day)
     async with SessionLocal() as db:
         service = TimetableService(db)
         lessons = await service.get_timetable(None, day=day)
@@ -107,21 +116,28 @@ async def room_week_day(callback: CallbackQuery, state: FSMContext):
             return
         kb = InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton(text=f"{s.strftime('%H:%M')} - {e.strftime('%H:%M')}", callback_data=f"room_week_time:{day}:{s.strftime('%H:%M')}-{e.strftime('%H:%M')}")]
+                [InlineKeyboardButton(text=f"{s.strftime('%H:%M')} - {e.strftime('%H:%M')}", callback_data=f"room_time_{s.strftime('%H:%M')}-{e.strftime('%H:%M')}")]
                 for s, e in time_slots
             ]
-            + [[InlineKeyboardButton(text="⬅️ Back", callback_data="room_week"), InlineKeyboardButton(text="🏠 Main Menu", callback_data="room_home")]]
+            + [[InlineKeyboardButton(text="Back", callback_data="room_week"), InlineKeyboardButton(text="Main Menu", callback_data="room_home")]]
         )
         await callback.message.edit_text("Select time slot:", reply_markup=kb)
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("room_week_time:"))
+@router.callback_query(F.data.startswith("room_time_"))
 async def room_week_time(callback: CallbackQuery, state: FSMContext):
     logging.info("room_week_time callback data=%s user=%s", callback.data, callback.from_user.id)
     import datetime as dt
 
-    _, day, time_range = callback.data.split(":")
+    state_data = await state.get_data()
+    day = (state_data.get("selected_day") or "").lower()
+    if not day:
+        await callback.message.edit_text("Please select day of week first.", reply_markup=room_finder_main_keyboard())
+        await callback.answer()
+        return
+
+    time_range = callback.data.removeprefix("room_time_")
     start_str, end_str = time_range.split("-")
     start_time = dt.datetime.strptime(start_str, "%H:%M").time()
     end_time = dt.datetime.strptime(end_str, "%H:%M").time()
@@ -136,16 +152,16 @@ async def room_week_time(callback: CallbackQuery, state: FSMContext):
         available = all_rooms - occupied
         blocks = {}
         for room in available:
-            block = room[0].upper() if room and room[0].isalpha() else "Other"
+            block = _room_block(room)
             blocks.setdefault(block, []).append(room)
         if not available:
             text = f"No available rooms found for {day.title()} {start_str}-{end_str}."
         else:
-            text = f"🏫 Available Rooms for {day.title()} {start_str}-{end_str}\n"
+            text = f"Available Rooms for {day.title()} {start_str}-{end_str}\n"
             for block in sorted(blocks.keys()):
-                text += f"\n📍 {block} Block\n"
+                text += f"\n{block} Block\n"
                 for r in sorted(blocks[block]):
-                    text += f"• Room {r}\n"
+                    text += f"- Room {r}\n"
     await callback.message.edit_text(text, reply_markup=room_finder_main_keyboard())
     await callback.answer()
 
