@@ -70,6 +70,16 @@ async def start_text_fallback(message: Message, state: FSMContext) -> None:
     await start_command(message, state)
 
 
+@router.message(F.text.func(lambda t: isinstance(t, str) and t.strip().lower().startswith("/start")))
+async def start_text_prefix_fallback(message: Message, state: FSMContext) -> None:
+    logging.info(
+        "Prefix /start fallback triggered: user_id=%s text=%r",
+        message.from_user.id if message.from_user else None,
+        message.text,
+    )
+    await start_command(message, state)
+
+
 @router.message(Command("ping"))
 async def ping_command(message: Message) -> None:
     await message.answer("pong")
