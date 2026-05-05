@@ -28,7 +28,7 @@ def main() -> None:
 
     print(f"Starting web service on 0.0.0.0:{port}")
     try:
-        uvicorn.run("app.api.main:app", host="0.0.0.0", port=port, log_level="info")
+        uvicorn.run("app.api.main:app", host="0.0.0.0", port=port, log_level="info", log_config=None)
     except Exception:
         error_text = traceback.format_exc()
         print("Uvicorn startup failed; switching to fallback server")
